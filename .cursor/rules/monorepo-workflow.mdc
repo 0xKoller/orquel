@@ -1,0 +1,64 @@
+# Monorepo Workflow Rules
+
+## Package Management
+- Use pnpm for package management
+- Workspace dependencies managed through pnpm
+- Use workspace: protocol for internal dependencies
+- Keep package.json files clean and minimal
+
+## Build System
+- Turbo handles build orchestration and caching
+- Use tsup for bundling packages
+- Generate both ESM and CJS outputs where needed
+- Include TypeScript declarations
+- Optimize bundle size for browser usage
+
+## Development Workflow
+- Use `pnpm dev` for development
+- Use `pnpm build` for production builds
+- Use `pnpm test` for running tests
+- Use `pnpm lint` for code linting
+- Use `pnpm typecheck` for type checking
+
+## Versioning and Releases
+- Use Changesets for versioning and releases
+- Create changesets for significant changes
+- Follow semantic versioning
+- Use `pnpm changeset` to create changesets
+- Use `pnpm version-packages` to version packages
+
+## Package Structure
+- `packages/core/` - Core orchestrator, types, and main API
+- `packages/adapters/*/` - Official adapters for external services
+- `packages/orquel/` - CLI and meta package
+- `packages/create-orquel-app/` - Project scaffolder
+- `examples/*/` - Usage examples and integrations
+
+## Dependencies
+- Keep dependencies minimal and focused
+- Use peer dependencies for shared types
+- Avoid circular dependencies
+- Use proper dependency ranges
+- Keep dev dependencies separate
+
+## Testing Strategy
+- Vitest for unit testing
+- Test files alongside source files with `.test.ts` suffix
+- Mock external dependencies in tests
+- Test adapter interfaces thoroughly
+- Use Turbo for test orchestration
+
+## Code Quality
+- ESLint with TypeScript rules
+- Prettier for consistent formatting
+- No unused variables (except with `_` prefix)
+- Comprehensive test coverage
+- Use Turbo for lint orchestration
+
+description: Monorepo workflow and package management rules for Orquel
+globs: ["package.json", "turbo.json", "pnpm-workspace.yaml"]
+alwaysApply: true
+description:
+globs:
+alwaysApply: false
+---

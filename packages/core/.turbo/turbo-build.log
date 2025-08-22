@@ -1,0 +1,22 @@
+
+> @orquel/core@0.1.0 build /Users/0xkoller/orquel/packages/core
+> tsup
+
+CLI Building entry: src/index.ts
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.0
+CLI Using tsup config: /Users/0xkoller/orquel/packages/core/tsup.config.ts
+CLI Target: es2022
+CLI Cleaning output folder
+ESM Build start
+CJS Build start
+ESM dist/index.js     6.58 KB
+ESM dist/index.js.map 15.06 KB
+ESM ⚡️ Build success in 7ms
+CJS dist/index.cjs     7.66 KB
+CJS dist/index.cjs.map 15.22 KB
+CJS ⚡️ Build success in 7ms
+DTS Build start
+DTS ⚡️ Build success in 484ms
+DTS dist/index.d.ts  7.87 KB
+DTS dist/index.d.cts 7.87 KB

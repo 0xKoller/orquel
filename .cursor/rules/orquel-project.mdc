@@ -1,0 +1,229 @@
+# Orquel Project Rules
+
+## Project Overview
+Orquel is a TypeScript-first, open-source toolkit for building knowledge bases and RAG systems. It's a monorepo using pnpm workspaces, Turbo for build orchestration, and follows a modular adapter architecture.
+
+## Architecture & Patterns
+
+### Core Principles
+- **Adapter-driven architecture**: All external integrations (embeddings, vector stores, answerers) are implemented as adapters
+- **TypeScript-first**: Strict typing with no `any` types allowed
+- **Composable design**: Components can be swapped independently
+- **DX-focused**: Developer experience is prioritized with ergonomic APIs
+
+### Package Structure
+- `packages/core/` - Core orchestrator, types, and main API
+- `packages/adapters/*/` - Official adapters for external services
+- `packages/orquel/` - CLI and meta package
+- `packages/create-orquel-app/` - Project scaffolder
+- `examples/*/` - Usage examples and integrations
+
+### Key Interfaces
+- `EmbeddingsAdapter` - Convert text to vectors
+- `VectorStoreAdapter` - Store and search embeddings
+- `LexicalAdapter` - Keyword-based text search
+- `AnswerAdapter` - Generate answers from retrieved chunks
+- `Chunk` - Core data structure with metadata
+
+## Code Style & Standards
+
+### TypeScript
+- Use strict TypeScript with no `any` types
+- Prefer explicit return types for public APIs
+- Use interfaces over types for object shapes
+- Implement proper JSDoc comments for public APIs
+- Use generic types for adapter implementations
+
+### Naming Conventions
+- **Files**: kebab-case for files, PascalCase for classes
+- **Functions**: camelCase, descriptive names
+- **Interfaces**: PascalCase with descriptive names
+- **Constants**: UPPER_SNAKE_CASE
+- **Adapters**: `{service}Adapter` pattern (e.g., `openAIEmbeddings`)
+
+### Code Organization
+- One class/interface per file for core types
+- Group related functionality in modules
+- Export public APIs from index files
+- Keep adapter implementations focused and single-purpose
+
+## Development Workflow
+
+### Monorepo Management
+- Use pnpm for package management
+- Turbo handles build orchestration and caching
+- Changesets for versioning and releases
+- Workspace dependencies managed through pnpm
+
+### Testing
+- Vitest for unit testing
+- Test files alongside source files with `.test.ts` suffix
+- Mock external dependencies in tests
+- Test adapter interfaces thoroughly
+
+### Building
+- Use tsup for bundling packages
+- Generate both ESM and CJS outputs where needed
+- Include TypeScript declarations
+- Optimize bundle size for browser usage
+
+## Adapter Development
+
+### Creating New Adapters
+1. Create package in `packages/adapters/`
+2. Implement required interface methods
+3. Add proper error handling and validation
+4. Include comprehensive tests
+5. Document usage examples
+
+### Adapter Patterns
+- **Configuration**: Accept options object in constructor
+- **Validation**: Validate inputs and throw descriptive errors
+- **Async operations**: All external calls should be async
+- **Error handling**: Provide meaningful error messages
+- **Type safety**: Ensure full TypeScript coverage
+
+## API Design
+
+### Core API Principles
+- **Fluent interface**: Chain operations where logical
+- **Immutable**: Don't mutate input objects
+- **Predictable**: Consistent behavior across adapters
+- **Composable**: Easy to combine different adapters
+
+### Error Handling
+- Use custom error classes for different error types
+- Provide context in error messages
+- Don't swallow errors - propagate them up
+- Include error codes for programmatic handling
+
+## Documentation
+
+### Code Comments
+- JSDoc for all public APIs
+- Include parameter types and return types
+- Provide usage examples in comments
+- Document edge cases and limitations
+
+### README Files
+- Clear installation instructions
+- Minimal working examples
+- Link to detailed documentation
+- Include troubleshooting section
+
+## Performance Considerations
+
+### Optimization
+- Implement proper chunking strategies
+- Use efficient vector operations
+- Minimize network calls in adapters
+- Implement caching where appropriate
+
+### Memory Management
+- Stream large documents when possible
+- Clean up resources in adapters
+- Avoid memory leaks in long-running processes
+
+## Security
+
+### Best Practices
+- Never log sensitive data (API keys, user content)
+- Validate all inputs
+- Use environment variables for secrets
+- Implement rate limiting in adapters
+
+## Integration Guidelines
+
+### External Services
+- Implement retry logic for network calls
+- Handle rate limits gracefully
+- Provide fallback options where possible
+- Cache responses when appropriate
+
+### CLI Development
+- Use clear, descriptive command names
+- Provide helpful error messages
+- Include progress indicators for long operations
+- Support both interactive and non-interactive modes
+
+## Common Patterns
+
+### Adapter Implementation
+```typescript
+export class ExampleAdapter implements EmbeddingsAdapter {
+  name = 'example';
+  dim = 1536;
+  
+  constructor(options: ExampleOptions) {
+    // Validate and store options
+  }
+  
+  async embed(texts: string[]): Promise<number[][]> {
+    // Implementation with proper error handling
+  }
+}
+```
+
+### Error Handling
+```typescript
+export class OrquelError extends Error {
+  constructor(message: string, public code: string) {
+    super(message);
+    this.name = 'OrquelError';
+  }
+}
+```
+
+### Testing Patterns
+```typescript
+describe('ExampleAdapter', () => {
+  it('should embed text correctly', async () => {
+    const adapter = new ExampleAdapter(options);
+    const embeddings = await adapter.embed(['test']);
+    expect(embeddings).toHaveLength(1);
+  });
+});
+```
+
+## File Organization
+
+### Package Structure
+```
+packages/example-adapter/
+├── package.json
+├── tsconfig.json
+├── tsup.config.ts
+├── src/
+│   ├── index.ts          # Main exports
+│   ├── adapter.ts        # Core implementation
+│   ├── types.ts          # Type definitions
+│   └── utils.ts          # Helper functions
+└── tests/
+    └── adapter.test.ts   # Unit tests
+```
+
+### Import/Export Patterns
+- Export main adapter from index.ts
+- Use named exports for types and utilities
+- Re-export commonly used types from core
+- Keep internal implementation details private
+
+## Quality Assurance
+
+### Code Quality
+- ESLint with TypeScript rules
+- Prettier for consistent formatting
+- No unused variables (except with `_` prefix)
+- Comprehensive test coverage
+
+### Performance
+- Benchmark critical operations
+- Monitor bundle sizes
+- Test with large datasets
+- Profile memory usage
+
+Remember: Orquel's goal is to make knowledge bases easier to build. Every decision should prioritize developer experience, type safety, and composability.
+description:
+globs:
+alwaysApply: false
+---

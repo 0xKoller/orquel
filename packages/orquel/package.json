@@ -24,7 +24,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
     "test": "vitest",
-    "postinstall": "node dist/postinstall.js"
+    "postinstall": "test -f dist/postinstall.js && node dist/postinstall.js || echo 'Skipping postinstall - run pnpm build first'"
   },
   "keywords": [
     "orquel",

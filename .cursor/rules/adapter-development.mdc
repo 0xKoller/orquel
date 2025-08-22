@@ -1,0 +1,74 @@
+# Adapter Development Rules
+
+## Adapter Architecture
+- All external integrations must implement adapter interfaces
+- Adapters should be focused and single-purpose
+- Follow the adapter pattern for consistency
+- Implement proper error handling and validation
+- Use TypeScript interfaces for type safety
+
+## Creating New Adapters
+1. Create package in `packages/adapters/`
+2. Implement required interface methods
+3. Add proper error handling and validation
+4. Include comprehensive tests
+5. Document usage examples
+
+## Adapter Patterns
+- **Configuration**: Accept options object in constructor
+- **Validation**: Validate inputs and throw descriptive errors
+- **Async operations**: All external calls should be async
+- **Error handling**: Provide meaningful error messages
+- **Type safety**: Ensure full TypeScript coverage
+
+## Key Interfaces to Implement
+- `EmbeddingsAdapter` - Convert text to vectors
+- `VectorStoreAdapter` - Store and search embeddings
+- `LexicalAdapter` - Keyword-based text search
+- `AnswerAdapter` - Generate answers from retrieved chunks
+
+## Adapter Implementation Example
+```typescript
+export class ExampleAdapter implements EmbeddingsAdapter {
+  name = 'example';
+  dim = 1536;
+  
+  constructor(options: ExampleOptions) {
+    // Validate and store options
+  }
+  
+  async embed(texts: string[]): Promise<number[][]> {
+    // Implementation with proper error handling
+  }
+}
+```
+
+## Package Structure for Adapters
+```
+packages/example-adapter/
+├── package.json
+├── tsconfig.json
+├── tsup.config.ts
+├── src/
+│   ├── index.ts          # Main exports
+│   ├── adapter.ts        # Core implementation
+│   ├── types.ts          # Type definitions
+│   └── utils.ts          # Helper functions
+└── tests/
+    └── adapter.test.ts   # Unit tests
+```
+
+## Testing Adapters
+- Test all interface methods thoroughly
+- Mock external API calls
+- Test error conditions and edge cases
+- Verify proper error messages
+- Test with various input types
+
+description: Rules for developing adapters in the Orquel ecosystem
+globs: ["packages/adapters/**/*.ts"]
+alwaysApply: true
+description:
+globs:
+alwaysApply: false
+---

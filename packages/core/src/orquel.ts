@@ -8,6 +8,24 @@ import type {
 } from './types.js';
 import { defaultChunker } from './chunker.js';
 
+/**
+ * Create a new Orquel instance with the specified configuration
+ * 
+ * @param config - Configuration object specifying adapters and options
+ * @returns Configured Orquel instance
+ * 
+ * @example
+ * ```typescript
+ * import { createOrquel } from '@orquel/core';
+ * import { openAIEmbeddings } from '@orquel/embeddings-openai';
+ * import { memoryStore } from '@orquel/store-memory';
+ * 
+ * const orq = createOrquel({
+ *   embeddings: openAIEmbeddings(),
+ *   vector: memoryStore(),
+ * });
+ * ```
+ */
 export function createOrquel(config: OrquelConfig): Orquel {
   const chunker = config.chunker || ((text: string) => 
     defaultChunker(text, { title: 'Unknown' })
@@ -44,7 +62,7 @@ export function createOrquel(config: OrquelConfig): Orquel {
       // Prepare rows for vector store
       const rows = chunks.map((chunk, i) => ({
         ...chunk,
-        embedding: embeddings[i],
+        embedding: embeddings[i]!,
       }));
 
       // Index in vector store
@@ -64,7 +82,7 @@ export function createOrquel(config: OrquelConfig): Orquel {
       if (hybrid && config.lexical) {
         // Hybrid search: combine dense and lexical
         const [queryEmbedding] = await config.embeddings.embed([q]);
-        const denseResults = await config.vector.searchByVector(queryEmbedding, k);
+        const denseResults = await config.vector.searchByVector(queryEmbedding!, k);
         const lexicalResults = await config.lexical.search(q, k);
         
         // Merge and normalize scores
@@ -72,14 +90,14 @@ export function createOrquel(config: OrquelConfig): Orquel {
       } else {
         // Dense-only search
         const [queryEmbedding] = await config.embeddings.embed([q]);
-        results = await config.vector.searchByVector(queryEmbedding, k);
+        results = await config.vector.searchByVector(queryEmbedding!, k);
       }
 
       // Apply reranking if available
       if (rerank && config.reranker && results.length > 0) {
         const chunks = results.map(r => r.chunk);
         const rerankedIndices = await config.reranker.rerank(q, chunks);
-        results = rerankedIndices.map(idx => results[idx]);
+        results = rerankedIndices.map(idx => results[idx]!);
       }
 
       return { results };
