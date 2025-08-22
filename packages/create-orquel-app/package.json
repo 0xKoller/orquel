@@ -1,0 +1,42 @@
+{
+  "name": "create-orquel-app",
+  "version": "0.1.0",
+  "description": "Project scaffolder for Orquel applications",
+  "type": "module",
+  "bin": {
+    "create-orquel-app": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "build": "tsup && cp -r src/templates dist/",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest"
+  },
+  "keywords": [
+    "orquel",
+    "scaffolder",
+    "create-app",
+    "cli"
+  ],
+  "author": "0xKoller",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/inquirer": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^8.10.0",
+    "@typescript-eslint/parser": "^8.10.0",
+    "eslint": "^9.13.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.3"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "inquirer": "^12.0.0"
+  }
+}
