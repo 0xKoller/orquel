@@ -1,0 +1,51 @@
+# TypeScript Standards for Orquel
+
+## TypeScript Configuration
+- Use strict TypeScript configuration
+- No `any` types allowed - use proper typing
+- Prefer explicit return types for public APIs
+- Use interfaces over types for object shapes
+- Implement proper JSDoc comments for all public APIs
+
+## Type Safety Rules
+- Always define proper interfaces for function parameters
+- Use generic types for adapter implementations
+- Avoid type assertions unless absolutely necessary
+- Use union types for multiple valid values
+- Prefer readonly properties for immutable data
+
+## Code Organization
+- One class/interface per file for core types
+- Group related functionality in modules
+- Export public APIs from index files
+- Keep internal implementation details private
+- Use barrel exports for clean imports
+
+## Naming Conventions
+- **Files**: kebab-case for files, PascalCase for classes
+- **Functions**: camelCase, descriptive names
+- **Interfaces**: PascalCase with descriptive names
+- **Constants**: UPPER_SNAKE_CASE
+- **Adapters**: `{service}Adapter` pattern
+
+## Error Handling
+- Use custom error classes for different error types
+- Provide context in error messages
+- Don't swallow errors - propagate them up
+- Include error codes for programmatic handling
+- Use proper TypeScript error types
+
+## Testing Patterns
+- Use Vitest for unit testing
+- Test files alongside source files with `.test.ts` suffix
+- Mock external dependencies in tests
+- Test adapter interfaces thoroughly
+- Use proper TypeScript types in test files
+
+description: TypeScript coding standards and best practices for Orquel
+globs: ["**/*.ts", "**/*.tsx"]
+alwaysApply: true
+description:
+globs:
+alwaysApply: false
+---

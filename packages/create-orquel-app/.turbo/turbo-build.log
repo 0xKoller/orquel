@@ -1,0 +1,14 @@
+
+> create-orquel-app@0.1.0 build /Users/0xkoller/orquel/packages/create-orquel-app
+> tsup && cp -r src/templates dist/
+
+CLI Building entry: src/index.ts
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.0
+CLI Using tsup config: /Users/0xkoller/orquel/packages/create-orquel-app/tsup.config.ts
+CLI Target: es2022
+CLI Cleaning output folder
+ESM Build start
+ESM dist/index.js     7.76 KB
+ESM dist/index.js.map 13.20 KB
+ESM ⚡️ Build success in 8ms

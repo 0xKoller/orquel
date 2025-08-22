@@ -1,5 +1,5 @@
 import type { Chunk, IngestSource } from './types.js';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 
 export interface ChunkerOptions {
   maxChunkSize?: number;
@@ -13,6 +13,29 @@ const DEFAULT_OPTIONS: Required<ChunkerOptions> = {
   respectMarkdownHeadings: true,
 };
 
+/**
+ * Default text chunking function with intelligent splitting
+ * 
+ * Features:
+ * - Configurable chunk size and overlap
+ * - Markdown heading awareness 
+ * - Word boundary preservation
+ * - Content deduplication by hash
+ * 
+ * @param text - Input text to chunk
+ * @param source - Source document information
+ * @param options - Chunking configuration options
+ * @returns Array of text chunks with metadata
+ * 
+ * @example
+ * ```typescript
+ * const chunks = defaultChunker(
+ *   '# Title\nContent here...',
+ *   { title: 'My Doc', kind: 'md' },
+ *   { maxChunkSize: 1000, overlap: 100 }
+ * );
+ * ```
+ */
 export function defaultChunker(
   text: string,
   source: IngestSource,
@@ -22,6 +45,10 @@ export function defaultChunker(
   
   // Normalize text: trim whitespace, collapse repeated spaces, preserve code blocks
   const normalized = normalizeText(text);
+  
+  if (normalized.length === 0) {
+    return [];
+  }
   
   if (normalized.length <= opts.maxChunkSize) {
     return [createChunk(normalized, source, 0)];

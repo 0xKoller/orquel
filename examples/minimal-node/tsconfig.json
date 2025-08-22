@@ -6,10 +6,4 @@
   },
   "include": ["src/**/*"],
   "exclude": ["dist", "node_modules"],
-  "references": [
-    { "path": "../../packages/core" },
-    { "path": "../../packages/adapters/embeddings-openai" },
-    { "path": "../../packages/adapters/store-memory" },
-    { "path": "../../packages/adapters/answer-openai" }
-  ]
 }
