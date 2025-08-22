@@ -1,0 +1,23 @@
+{
+  "name": "orquel-example-minimal-node",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orquel/core": "workspace:*",
+    "@orquel/embeddings-openai": "workspace:*",
+    "@orquel/store-memory": "workspace:*",
+    "@orquel/answer-openai": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "@types/node": "^20.17.6"
+  }
+}
