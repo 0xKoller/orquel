@@ -1,12 +1,22 @@
 # Orquel
 
-> **Orquel** is a TypeScript‑first, open‑source toolkit for building knowledge bases and retrieval‑augmented generation (RAG) systems. It gives developers the core primitives to ingest, chunk, index, and query text, with an adapter‑driven architecture that makes it easy to swap embeddings, vector stores, rerankers, and answerers.
+Make knowledge usable. **Anywhere**
+
+**Ingest**. Turn any source — databases, files, APIs — into structured knowledge.
+
+**Embed**. Choose your adapter, your model, your storage. Stay in control.
+
+**Retrieve**. Query with speed, precision, and flexibility. No boilerplate.
+
+**Build**. Power your agents, apps, and workflows with knowledge that just works.
+
 
 ---
 
 ## ✨ Why Orquel?
 
-Modern apps need to make sense of unstructured information. Today’s devs reinvent the wheel: writing chunkers, wiring embeddings, gluing vector stores, bolting on rerankers. **Orquel makes this process simple, composable, and consistent**.
+**Orquel** is a TypeScript‑first, open‑source toolkit for building knowledge bases and retrieval‑augmented generation (RAG) systems. It gives developers the core primitives to ingest, chunk, index, and query text, with an adapter‑driven architecture that makes it easy to swap embeddings, vector stores, rerankers, and answerers.
+Today’s devs reinvent the wheel: writing chunkers, wiring embeddings, gluing vector stores, bolting on rerankers. **Orquel makes this process simple, composable, and consistent**.
 
 * **DX First**: One‑command install or scaffold; strict TypeScript; minimal, ergonomic API.
 * **Composable**: Swap any part—embeddings, vector DBs, lexical search, rerankers—via adapters.
