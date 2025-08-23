@@ -2,3 +2,4 @@ no-read-stuff.md
 node_modules
 .turbo
 NEXT-STEPS.md
+.env
