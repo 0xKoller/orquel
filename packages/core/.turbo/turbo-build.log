@@ -10,13 +10,27 @@ CLI Target: es2022
 CLI Cleaning output folder
 ESM Build start
 CJS Build start
-ESM dist/index.js     6.58 KB
-ESM dist/index.js.map 15.06 KB
-ESM ⚡️ Build success in 7ms
-CJS dist/index.cjs     7.66 KB
-CJS dist/index.cjs.map 15.22 KB
-CJS ⚡️ Build success in 7ms
+ESM dist/index.js     27.43 KB
+ESM dist/index.js.map 51.56 KB
+ESM ⚡️ Build success in 10ms
+CJS dist/index.cjs     28.64 KB
+CJS dist/index.cjs.map 51.79 KB
+CJS ⚡️ Build success in 10ms
 DTS Build start
-DTS ⚡️ Build success in 484ms
-DTS dist/index.d.ts  7.87 KB
-DTS dist/index.d.cts 7.87 KB
+src/evaluation.ts(158,27): error TS2379: Argument of type '{ responseTime: number; answer: string | undefined; answerScore: number | undefined; query: string; retrievedChunkIds: string[]; relevantChunkIds: string[]; precision: number; recall: number; ... 4 more ...; hasRelevantResult: boolean; }' is not assignable to parameter of type 'QueryEvaluationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'answer' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/evaluation.ts(216,27): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/evaluation.ts(254,41): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+Error: error occurred in dts build
+    at Worker.<anonymous> (/Users/0xkoller/orquel/node_modules/.pnpm/tsup@8.5.0_postcss@8.5.6_tsx@4.20.4_typescript@5.9.2/node_modules/tsup/dist/index.js:1545:26)
+    at Worker.emit (node:events:507:28)
+    at MessagePort.<anonymous> (node:internal/worker:268:53)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:827:20)
+    at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28)
+DTS Build error
+ ELIFECYCLE  Command failed with exit code 1.

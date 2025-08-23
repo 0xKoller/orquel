@@ -24,6 +24,34 @@ importers:
         specifier: ^5.6.3
         version: 5.9.2
 
+  examples/argentina-test:
+    dependencies:
+      '@orquel/answer-openai':
+        specifier: workspace:*
+        version: link:../../packages/adapters/answer-openai
+      '@orquel/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@orquel/embeddings-openai':
+        specifier: workspace:*
+        version: link:../../packages/adapters/embeddings-openai
+      '@orquel/store-memory':
+        specifier: workspace:*
+        version: link:../../packages/adapters/store-memory
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.6.1
+    devDependencies:
+      '@types/node':
+        specifier: ^20.17.6
+        version: 20.19.11
+      tsx:
+        specifier: ^4.19.2
+        version: 4.20.4
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.2
+
   examples/minimal-node:
     dependencies:
       '@orquel/answer-openai':
@@ -1215,6 +1243,10 @@ packages:
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
+
+  dotenv@16.6.1:
+    resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
+    engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -3101,6 +3133,8 @@ snapshots:
   dir-glob@3.0.1:
     dependencies:
       path-type: 4.0.0
+
+  dotenv@16.6.1: {}
 
   dunder-proto@1.0.1:
     dependencies:

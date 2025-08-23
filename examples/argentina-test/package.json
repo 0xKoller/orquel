@@ -1,8 +1,9 @@
 {
-  "name": "orquel-example-minimal-node",
+  "name": "orquel-example-argentina-test",
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "description": "Test Orquel RAG capabilities with Argentine cultural data",
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsc",

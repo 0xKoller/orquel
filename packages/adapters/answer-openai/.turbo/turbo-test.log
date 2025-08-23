@@ -1,0 +1,430 @@
+
+> @orquel/answer-openai@0.1.0 test /Users/0xkoller/orquel/packages/adapters/answer-openai
+> vitest
+
+
+ DEV  v2.1.9 /Users/0xkoller/orquel/packages/adapters/answer-openai
+
+ ❯ src/index.test.ts (22 tests | 14 failed) 58ms
+   × openAIAnswerer > adapter creation > should create adapter with default configuration 5ms
+     → expected 'openai-gpt-4' to be 'openai-answerer' // Object.is equality
+   × openAIAnswerer > adapter creation > should create adapter with custom model 1ms
+     → expected 'openai-gpt-4' to be 'openai-answerer' // Object.is equality
+   × openAIAnswerer > adapter creation > should create adapter with custom API key 0ms
+     → expected 'openai-gpt-4' to be 'openai-answerer' // Object.is equality
+   × openAIAnswerer > adapter creation > should throw error if no API key available 1ms
+     → expected [Function] to throw error including 'OpenAI API key not found. Set OPENAI_…' but got 'OpenAI API key is required. Set OPENA…'
+   × openAIAnswerer > answer generation > should generate answer from contexts 3ms
+     → expected "spy" to be called with arguments: [ { model: 'gpt-4o-mini', …(2) } ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
++     "max_tokens": 1000,
+      "messages": Array [
+        Object {
+-         "content": StringContaining "You are a helpful assistant",
++         "content": "You are a helpful assistant that answers questions based on the provided context. 
++ Follow these guidelines:
++ - Answer based only on the provided context
++ - If the context doesn't contain enough information, say so
++ - Be concise but comprehensive
++ - Use the same language as the question
++ - Include relevant details from the context",
+          "role": "system",
+        },
+        Object {
+-         "content": StringContaining "What is Argentina?",
++         "content": "Context:
++ [1] Argentina is a country in South America.
++
++ [2] Buenos Aires is the capital city of Argentina.
++
++ Question: What is Argentina?
++
++ Answer:",
+          "role": "user",
+        },
+      ],
+-     "model": "gpt-4o-mini",
++     "model": "gpt-4",
++     "stream": false,
+      "temperature": 0.1,
+    },
+  ]
+
+
+Number of calls: 1
+
+   × openAIAnswerer > answer generation > should include all contexts in the prompt 3ms
+     → expected 'Context:\n[1] Argentina is a country …' to contain 'Geography of Argentina'
+   × openAIAnswerer > answer generation > should handle empty contexts gracefully 12ms
+     → Cannot read properties of undefined (reading '0')
+   × openAIAnswerer > answer generation > should use custom model configuration 18ms
+     → expected "spy" to be called with arguments: [ { model: 'gpt-3.5-turbo', …(2) } ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
+-     "messages": Any<Array>,
++     "max_tokens": 1000,
++     "messages": Array [
++       Object {
++         "content": "You are a helpful assistant that answers questions based on the provided context. 
++ Follow these guidelines:
++ - Answer based only on the provided context
++ - If the context doesn't contain enough information, say so
++ - Be concise but comprehensive
++ - Use the same language as the question
++ - Include relevant details from the context",
++         "role": "system",
++       },
++       Object {
++         "content": "Context:
++ [1] Argentina is a country in South America.
++
++ [2] Buenos Aires is the capital city of Argentina.
++
++ Question: Test query
++
++ Answer:",
++         "role": "user",
++       },
++     ],
+      "model": "gpt-3.5-turbo",
++     "stream": false,
+      "temperature": 0.5,
+    },
+  ]
+
+
+Number of calls: 1
+
+   × openAIAnswerer > error handling > should handle malformed API responses 1ms
+     → expected [Function] to throw error including 'Invalid response format from OpenAI A…' but got 'Failed to generate answer: Cannot rea…'
+   × openAIAnswerer > error handling > should handle empty response content 8ms
+     → expected [Function] to throw error including 'No content in OpenAI response' but got 'Failed to generate answer: No answer …'
+   × openAIAnswerer > context handling > should format context sources correctly 1ms
+     → expected 'Context:\n[1] Detailed information ab…' to contain 'Comprehensive Argentina Guide'
+   × openAIAnswerer > context handling > should handle long contexts by truncating appropriately 1ms
+     → expected 'Context:\n[1] AAAAAAAAAAAAAAAAAAAAAAA…' to contain 'Long Document'
+   × openAIAnswerer > prompt engineering > should construct proper system prompt with instructions 0ms
+     → expected 'You are a helpful assistant that answ…' to contain 'context information'
+   × openAIAnswerer > prompt engineering > should format user prompt with query and contexts 0ms
+     → expected 'Context:\n[1] Argentina is a country …' to contain 'Context information:'
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > adapter creation > should create adapter with default configuration
+AssertionError: expected 'openai-gpt-4' to be 'openai-answerer' // Object.is equality
+
+Expected: "openai-answerer"
+Received: "openai-gpt-4"
+
+ ❯ src/index.test.ts:66:28
+     64|       const adapter = openAIAnswerer();
+     65|       
+     66|       expect(adapter.name).toBe('openai-answerer');
+       |                            ^
+     67|       expect(typeof adapter.answer).toBe('function');
+     68|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > adapter creation > should create adapter with custom model
+AssertionError: expected 'openai-gpt-4' to be 'openai-answerer' // Object.is equality
+
+Expected: "openai-answerer"
+Received: "openai-gpt-4"
+
+ ❯ src/index.test.ts:75:28
+     73|       });
+     74|       
+     75|       expect(adapter.name).toBe('openai-answerer');
+       |                            ^
+     76|     });
+     77| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > adapter creation > should create adapter with custom API key
+AssertionError: expected 'openai-gpt-4' to be 'openai-answerer' // Object.is equality
+
+Expected: "openai-answerer"
+Received: "openai-gpt-4"
+
+ ❯ src/index.test.ts:84:28
+     82|       });
+     83|       
+     84|       expect(adapter.name).toBe('openai-answerer');
+       |                            ^
+     85|     });
+     86| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > adapter creation > should throw error if no API key available
+AssertionError: expected [Function] to throw error including 'OpenAI API key not found. Set OPENAI_…' but got 'OpenAI API key is required. Set OPENA…'
+
+Expected: "OpenAI API key not found. Set OPENAI_API_KEY environment variable or pass apiKey option."
+Received: "OpenAI API key is required. Set OPENAI_API_KEY environment variable or pass apiKey option."
+
+ ❯ src/index.test.ts:90:38
+     88|       delete process.env.OPENAI_API_KEY;
+     89|       
+     90|       expect(() => openAIAnswerer()).toThrow(
+       |                                      ^
+     91|         'OpenAI API key not found. Set OPENAI_API_KEY environment vari…
+     92|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > answer generation > should generate answer from contexts
+AssertionError: expected "spy" to be called with arguments: [ { model: 'gpt-4o-mini', …(2) } ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
++     "max_tokens": 1000,
+      "messages": Array [
+        Object {
+-         "content": StringContaining "You are a helpful assistant",
++         "content": "You are a helpful assistant that answers questions based on the provided context. 
++ Follow these guidelines:
++ - Answer based only on the provided context
++ - If the context doesn't contain enough information, say so
++ - Be concise but comprehensive
++ - Use the same language as the question
++ - Include relevant details from the context",
+          "role": "system",
+        },
+        Object {
+-         "content": StringContaining "What is Argentina?",
++         "content": "Context:
++ [1] Argentina is a country in South America.
++
++ [2] Buenos Aires is the capital city of Argentina.
++
++ Question: What is Argentina?
++
++ Answer:",
+          "role": "user",
+        },
+      ],
+-     "model": "gpt-4o-mini",
++     "model": "gpt-4",
++     "stream": false,
+      "temperature": 0.1,
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ src/index.test.ts:105:50
+    103|       });
+    104|       
+    105|       expect(mockOpenAI.chat.completions.create).toHaveBeenCalledWith({
+       |                                                  ^
+    106|         model: 'gpt-4o-mini',
+    107|         messages: [
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > answer generation > should include all contexts in the prompt
+AssertionError: expected 'Context:\n[1] Argentina is a country …' to contain 'Geography of Argentina'
+
+- Expected
++ Received
+
+- Geography of Argentina
++ Context:
++ [1] Argentina is a country in South America.
++
++ [2] Buenos Aires is the capital city of Argentina.
++
++ Question: Tell me about Argentina
++
++ Answer:
+
+ ❯ src/index.test.ts:136:35
+    134|       expect(userMessage.content).toContain('Argentina is a country in…
+    135|       expect(userMessage.content).toContain('Buenos Aires is the capit…
+    136|       expect(userMessage.content).toContain('Geography of Argentina');
+       |                                   ^
+    137|       expect(userMessage.content).toContain('Cities of Argentina');
+    138|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > answer generation > should handle empty contexts gracefully
+TypeError: Cannot read properties of undefined (reading '0')
+ ❯ src/index.test.ts:148:67
+    146|       });
+    147|       
+    148|       const call = mockOpenAI.chat.completions.create.mock.calls[0][0];
+       |                                                                   ^
+    149|       const userMessage = call.messages.find((m: any) => m.role === 'u…
+    150|       
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > answer generation > should use custom model configuration
+AssertionError: expected "spy" to be called with arguments: [ { model: 'gpt-3.5-turbo', …(2) } ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
+-     "messages": Any<Array>,
++     "max_tokens": 1000,
++     "messages": Array [
++       Object {
++         "content": "You are a helpful assistant that answers questions based on the provided context. 
++ Follow these guidelines:
++ - Answer based only on the provided context
++ - If the context doesn't contain enough information, say so
++ - Be concise but comprehensive
++ - Use the same language as the question
++ - Include relevant details from the context",
++         "role": "system",
++       },
++       Object {
++         "content": "Context:
++ [1] Argentina is a country in South America.
++
++ [2] Buenos Aires is the capital city of Argentina.
++
++ Question: Test query
++
++ Answer:",
++         "role": "user",
++       },
++     ],
+      "model": "gpt-3.5-turbo",
++     "stream": false,
+      "temperature": 0.5,
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ src/index.test.ts:166:50
+    164|       });
+    165|       
+    166|       expect(mockOpenAI.chat.completions.create).toHaveBeenCalledWith({
+       |                                                  ^
+    167|         model: 'gpt-3.5-turbo',
+    168|         messages: expect.any(Array),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > error handling > should handle malformed API responses
+AssertionError: expected [Function] to throw error including 'Invalid response format from OpenAI A…' but got 'Failed to generate answer: Cannot rea…'
+
+Expected: "Invalid response format from OpenAI API"
+Received: "Failed to generate answer: Cannot read properties of undefined (reading '0')"
+
+ ❯ src/index.test.ts:228:7
+    226|       });
+    227|       
+    228|       await expect(
+       |       ^
+    229|         adapter.answer({
+    230|           query: 'Test query',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > error handling > should handle empty response content
+AssertionError: expected [Function] to throw error including 'No content in OpenAI response' but got 'Failed to generate answer: No answer …'
+
+Expected: "No content in OpenAI response"
+Received: "Failed to generate answer: No answer generated"
+
+ ❯ src/index.test.ts:247:7
+    245|       });
+    246|       
+    247|       await expect(
+       |       ^
+    248|         adapter.answer({
+    249|           query: 'Test query',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > context handling > should format context sources correctly
+AssertionError: expected 'Context:\n[1] Detailed information ab…' to contain 'Comprehensive Argentina Guide'
+
+- Expected
++ Received
+
+- Comprehensive Argentina Guide
++ Context:
++ [1] Detailed information about Argentina.
++
++ Question: Tell me about Argentina
++
++ Answer:
+
+ ❯ src/index.test.ts:287:35
+    285|       const userMessage = call.messages.find((m: any) => m.role === 'u…
+    286|       
+    287|       expect(userMessage.content).toContain('Comprehensive Argentina G…
+       |                                   ^
+    288|       expect(userMessage.content).toContain('Detailed information abou…
+    289|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > context handling > should handle long contexts by truncating appropriately
+AssertionError: expected 'Context:\n[1] AAAAAAAAAAAAAAAAAAAAAAA…' to contain 'Long Document'
+
+- Expected
++ Received
+
+- Long Document
++ Context:
++ [1] AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
++
++ Question: Test query
++
++ Answer:
+
+ ❯ src/index.test.ts:314:35
+    312|       // Should be truncated but still contain essential info
+    313|       expect(userMessage.content.length).toBeLessThan(1200);
+    314|       expect(userMessage.content).toContain('Long Document');
+       |                                   ^
+    315|     });
+    316| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/14]⎯
+
+ FAIL  src/index.test.ts > openAIAnswerer > prompt engineering > should construct proper system prompt with instructions
+AssertionError: expected 'You are a helpful assistant that answ…' to contain 'context information'
+
+- Expected
++ Received
+
+- context information
++ You are a helpful assistant that answers questions based on the provided context. 
++ Follow these guidelines:
++ - Answer based only on the provided context
++ - If the context doesn't contain enough information, say so
++ - Be concise but comprehensive
++ - Use the same language as the question
++ - Include relevant details from the context
+
+ ❯ src/index.test.ts:353:37
+    351|       

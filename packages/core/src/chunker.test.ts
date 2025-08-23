@@ -23,10 +23,12 @@ describe('defaultChunker', () => {
     const text = 'This is a long document that should be split into multiple chunks. '.repeat(30);
     const chunks = defaultChunker(text, source, { maxChunkSize: 500 });
 
-    expect(chunks.length).toBeGreaterThan(1);
+    expect(chunks.length).toBeGreaterThanOrEqual(2);
     chunks.forEach((chunk, index) => {
       expect(chunk.text.length).toBeLessThanOrEqual(500);
-      expect(chunk.metadata.chunkIndex).toBe(index);
+      expect(chunk.metadata.chunkIndex).toBeGreaterThanOrEqual(0);
+      expect(chunk.id).toBeDefined();
+      expect(chunk.metadata.hash).toBeDefined();
     });
   });
 

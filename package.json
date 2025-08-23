@@ -9,6 +9,7 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "clean": "turbo clean",
+    "validate-examples": "scripts/validate-examples.sh",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "pnpm build && changeset publish"

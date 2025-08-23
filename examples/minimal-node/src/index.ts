@@ -1,4 +1,5 @@
-import { createOrquel } from '@orquel/core';
+import 'dotenv/config';
+import { createOrquel, OrquelUtils } from '@orquel/core';
 import { openAIEmbeddings } from '@orquel/embeddings-openai';
 import { memoryStore } from '@orquel/store-memory';
 import { openAIAnswerer } from '@orquel/answer-openai';
@@ -7,11 +8,24 @@ const orq = createOrquel({
   embeddings: openAIEmbeddings(),
   vector: memoryStore(),
   answerer: openAIAnswerer(),
+  debug: process.env.DEBUG === 'true'
 });
 
 async function main() {
   console.log('🎯 Orquel Minimal Example');
   console.log('========================\n');
+
+  // Check for OpenAI API key
+  if (!process.env.OPENAI_API_KEY) {
+    console.error('❌ Error: OPENAI_API_KEY environment variable not set');
+    console.log('💡 To fix this:');
+    console.log('   1. Get your API key from: https://platform.openai.com/api-keys');
+    console.log('   2. Set it as an environment variable: export OPENAI_API_KEY=your-key');
+    console.log('   3. Or create a .env file in the project root');
+    process.exit(1);
+  }
+
+  console.log('✅ OpenAI API Key configured\n');
 
   // Ingest sample content
   const sampleContent = `# Orquel Documentation
@@ -72,14 +86,27 @@ While it provides simple defaults like in-memory storage for development, Orquel
   for (const query of queries) {
     console.log(`❓ Question: ${query}`);
     
-    // Get search results
-    const { results } = await orq.query(query, { k: 3 });
-    console.log(`🔍 Found ${results.length} relevant chunks`);
-    
-    // Generate answer
-    const { answer, contexts } = await orq.answer(query, { topK: 3 });
-    console.log(`💡 Answer: ${answer}`);
-    console.log(`📖 Based on ${contexts.length} context chunks\n`);
+    try {
+      // Get search results
+      const { results } = await orq.query(query, { k: 3 });
+      console.log(`🔍 Found ${results.length} relevant chunks`);
+      if (results.length > 0) {
+        console.log('📊 Top sources:');
+        console.log(OrquelUtils.formatSearchResults(results.slice(0, 2)).split('\n').map(line => `   ${line}`).join('\n'));
+      }
+      
+      // Generate answer
+      const { answer, contexts } = await orq.answer(query, { topK: 3 });
+      console.log(`💡 Answer: ${answer}`);
+      console.log(`📚 ${OrquelUtils.summarizeContexts(contexts)}\n`);
+      
+    } catch (error) {
+      console.error(`❌ Error processing question: ${error}`);
+      if (error instanceof Error && error.message.includes('401')) {
+        console.log('💡 Suggestion: Check your OPENAI_API_KEY environment variable');
+        break;
+      }
+    }
   }
 
   console.log('🎉 Demo completed successfully!');

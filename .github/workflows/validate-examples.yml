@@ -1,0 +1,326 @@
+name: Validate Examples
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  # Also run when core packages change
+  paths:
+    - 'packages/core/**'
+    - 'packages/adapters/**'
+    - 'examples/**'
+    - '.github/workflows/validate-examples.yml'
+
+jobs:
+  validate-examples:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+        example:
+          - minimal-node
+          - argentina-test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Validate example structure
+        run: |
+          EXAMPLE_DIR="examples/${{ matrix.example }}"
+          echo "Validating example: ${{ matrix.example }}"
+          
+          # Check required files exist
+          if [[ ! -f "$EXAMPLE_DIR/package.json" ]]; then
+            echo "❌ Missing package.json in $EXAMPLE_DIR"
+            exit 1
+          fi
+          
+          if [[ ! -f "$EXAMPLE_DIR/src/index.ts" ]]; then
+            echo "❌ Missing src/index.ts in $EXAMPLE_DIR"
+            exit 1
+          fi
+          
+          if [[ ! -f "$EXAMPLE_DIR/README.md" ]]; then
+            echo "❌ Missing README.md in $EXAMPLE_DIR"
+            exit 1
+          fi
+          
+          echo "✅ Example structure is valid"
+
+      - name: Type check example
+        run: |
+          cd "examples/${{ matrix.example }}"
+          echo "Type checking ${{ matrix.example }}..."
+          pnpm typecheck
+
+      - name: Build example
+        run: |
+          cd "examples/${{ matrix.example }}"
+          echo "Building ${{ matrix.example }}..."
+          pnpm build
+
+      - name: Validate imports and API usage
+        run: |
+          cd "examples/${{ matrix.example }}"
+          echo "Validating API usage in ${{ matrix.example }}..."
+          
+          # Check that example uses current API patterns
+          if ! grep -q "createOrquel" src/index.ts; then
+            echo "❌ Example should use createOrquel function"
+            exit 1
+          fi
+          
+          if ! grep -q "OrquelUtils" src/index.ts; then
+            echo "❌ Example should demonstrate OrquelUtils usage"
+            exit 1
+          fi
+          
+          echo "✅ API usage validation passed"
+
+      - name: Check for outdated patterns
+        run: |
+          cd "examples/${{ matrix.example }}"
+          echo "Checking for outdated patterns in ${{ matrix.example }}..."
+          
+          # Check for deprecated patterns that should not be used
+          if grep -q "chunk\.source\.title" src/**/*.ts 2>/dev/null; then
+            echo "❌ Found deprecated pattern: chunk.source.title (should be chunk.metadata.source.title)"
+            echo "Files with issues:"
+            grep -n "chunk\.source\.title" src/**/*.ts
+            exit 1
+          fi
+          
+          echo "✅ No outdated patterns found"
+
+      - name: Dry run example (without API keys)
+        run: |
+          cd "examples/${{ matrix.example }}"
+          echo "Testing example compilation and basic validation..."
+          
+          # Create a test script that validates the example can be imported
+          cat > test-import.js << 'EOF'
+          import { createRequire } from 'module';
+          const require = createRequire(import.meta.url);
+          
+          try {
+            // Test that the built example can be loaded
+            const fs = require('fs');
+            if (fs.existsSync('./dist/index.js')) {
+              console.log('✅ Example built successfully and can be imported');
+            } else {
+              console.error('❌ Build output not found');
+              process.exit(1);
+            }
+          } catch (error) {
+            console.error('❌ Import test failed:', error.message);
+            process.exit(1);
+          }
+          EOF
+          
+          node test-import.js
+
+  validate-documentation:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Validate example documentation
+        run: |
+          echo "Validating example documentation..."
+          
+          for example_dir in examples/*/; do
+            example_name=$(basename "$example_dir")
+            echo "Checking documentation for: $example_name"
+            
+            readme_file="$example_dir/README.md"
+            if [[ ! -f "$readme_file" ]]; then
+              echo "❌ Missing README.md for $example_name"
+              exit 1
+            fi
+            
+            # Check that README has essential sections
+            if ! grep -q "## Installation" "$readme_file"; then
+              echo "❌ README for $example_name missing Installation section"
+              exit 1
+            fi
+            
+            if ! grep -q "## Usage" "$readme_file"; then
+              echo "❌ README for $example_name missing Usage section"
+              exit 1
+            fi
+            
+            # Check that code examples in README are valid
+            if grep -q "\`\`\`typescript" "$readme_file"; then
+              echo "✅ README for $example_name contains TypeScript examples"
+            else
+              echo "⚠️ README for $example_name should include TypeScript examples"
+            fi
+          done
+          
+          echo "✅ Documentation validation completed"
+
+      - name: Check API consistency across examples
+        run: |
+          echo "Checking API consistency across examples..."
+          
+          # Extract API usage patterns from all examples
+          temp_file=$(mktemp)
+          
+          # Find all TypeScript files in examples
+          find examples/ -name "*.ts" -type f > "$temp_file"
+          
+          # Check for consistent API usage patterns
+          echo "API patterns found:"
+          
+          # Check createOrquel usage
+          echo "- createOrquel usage:"
+          grep -h "createOrquel(" $(cat "$temp_file") | sort | uniq || echo "  No usage found"
+          
+          # Check OrquelUtils usage  
+          echo "- OrquelUtils usage:"
+          grep -h "OrquelUtils\." $(cat "$temp_file") | sort | uniq || echo "  No usage found"
+          
+          # Check adapter imports
+          echo "- Adapter imports:"
+          grep -h "from '@orquel/" $(cat "$temp_file") | sort | uniq || echo "  No imports found"
+          
+          rm "$temp_file"
+          echo "✅ API consistency check completed"
+
+  performance-baseline:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Performance baseline test
+        run: |
+          echo "Running performance baseline tests..."
+          
+          cd examples/minimal-node
+          
+          # Create a simple performance test
+          cat > perf-test.js << 'EOF'
+          import { performance } from 'perf_hooks';
+          import { createOrquel } from '@orquel/core';
+          import { memoryStore } from '@orquel/store-memory';
+          import { openAIEmbeddings } from '@orquel/embeddings-openai';
+          
+          // Mock OpenAI to avoid API calls
+          const mockEmbeddings = {
+            name: 'mock-embeddings',
+            dim: 384,
+            async embed(texts) {
+              return texts.map(() => Array.from({ length: 384 }, () => Math.random()));
+            }
+          };
+          
+          async function runPerformanceTest() {
+            const orq = createOrquel({
+              embeddings: mockEmbeddings,
+              vector: memoryStore(),
+            });
+            
+            const startTime = performance.now();
+            
+            // Test chunking performance
+            const { chunks } = await orq.ingest({
+              source: { title: 'Test Doc' },
+              content: 'Test content '.repeat(1000),
+            });
+            
+            // Test indexing performance
+            await orq.index(chunks);
+            
+            // Test query performance  
+            await orq.query('test query');
+            
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+            
+            console.log(`Performance test completed in ${duration.toFixed(2)}ms`);
+            
+            // Basic performance assertion (should complete in reasonable time)
+            if (duration > 5000) {  // 5 seconds
+              console.error(`❌ Performance test too slow: ${duration}ms`);
+              process.exit(1);
+            }
+            
+            console.log('✅ Performance baseline check passed');
+          }
+          
+          runPerformanceTest().catch(error => {
+            console.error('❌ Performance test failed:', error);
+            process.exit(1);
+          });
+          EOF
+          
+          node perf-test.js

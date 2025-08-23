@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { memoryStore } from './index.js';
 import type { Chunk } from '@orquel/core';
 
@@ -137,5 +137,100 @@ describe('memoryStore', () => {
     const results = await store.searchByVector([1, 0, 0], 3);
     
     expect(results).toHaveLength(3);
+  });
+
+  describe('performance and edge cases', () => {
+    it('should handle large batches efficiently', async () => {
+      const store = memoryStore();
+      
+      // Create 1000 chunks
+      const chunks = Array.from({ length: 1000 }, (_, i) => ({
+        ...createTestChunk(`chunk-${i}`, `Content ${i}`),
+        embedding: Array.from({ length: 384 }, () => Math.random()),
+      }));
+      
+      const startTime = Date.now();
+      await store.upsert(chunks);
+      const upsertTime = Date.now() - startTime;
+      
+      // Should complete in reasonable time (< 1 second)
+      expect(upsertTime).toBeLessThan(1000);
+      
+      const searchStart = Date.now();
+      const results = await store.searchByVector(chunks[0].embedding, 10);
+      const searchTime = Date.now() - searchStart;
+      
+      expect(results).toHaveLength(10);
+      expect(searchTime).toBeLessThan(100); // Search should be fast
+    });
+
+    it('should maintain data integrity with concurrent operations', async () => {
+      const store = memoryStore();
+      
+      // Simulate concurrent upserts
+      const batches = Array.from({ length: 10 }, (_, batchIndex) =>
+        Array.from({ length: 10 }, (_, i) => ({
+          ...createTestChunk(`batch-${batchIndex}-${i}`, `Content ${batchIndex}-${i}`),
+          embedding: [batchIndex / 10, i / 10, 0.5],
+        }))
+      );
+      
+      // Run upserts concurrently
+      await Promise.all(batches.map(batch => store.upsert(batch)));
+      
+      // Verify all chunks were stored
+      const allResults = await store.searchByVector([0.5, 0.5, 0.5], 1000);
+      expect(allResults).toHaveLength(100); // 10 batches × 10 chunks
+      
+      // Verify no duplicate IDs
+      const ids = allResults.map(r => r.chunk.id);
+      expect(new Set(ids).size).toBe(100);
+    });
+
+    it('should validate embedding dimensions for consistency', async () => {
+      const store = memoryStore();
+      
+      // Store embeddings with same dimension
+      await store.upsert([
+        { ...createTestChunk('3d-1', '3D chunk 1'), embedding: [1, 0, 0] },
+        { ...createTestChunk('3d-2', '3D chunk 2'), embedding: [0, 1, 0] },
+        { ...createTestChunk('3d-3', '3D chunk 3'), embedding: [0, 0, 1] },
+      ]);
+      
+      // Search should work with matching dimension
+      const results = await store.searchByVector([1, 0, 0], 3);
+      expect(results).toHaveLength(3);
+      
+      // Search with wrong dimension should throw error
+      await expect(store.searchByVector([1, 0], 1)).rejects.toThrow('Vectors must have the same length');
+    });
+
+    it('should preserve complex metadata structures', async () => {
+      const store = memoryStore();
+      
+      const complexChunk = {
+        ...createTestChunk('complex', 'Complex chunk'),
+        embedding: [0.5, 0.5, 0.5],
+        metadata: {
+          source: {
+            title: 'Complex Document',
+            kind: 'pdf' as const,
+            author: 'Test Author',
+            url: 'https://example.com/doc.pdf',
+            createdAt: new Date('2023-01-01'),
+            updatedAt: new Date('2023-06-01'),
+          },
+          chunkIndex: 42,
+          tokens: 150,
+          hash: 'complex-hash',
+        },
+      };
+      
+      await store.upsert([complexChunk]);
+      const results = await store.searchByVector([0.5, 0.5, 0.5], 1);
+      
+      expect(results[0].chunk.metadata).toEqual(complexChunk.metadata);
+      expect(results[0].chunk.metadata.source.createdAt).toBeInstanceOf(Date);
+    });
   });
 });

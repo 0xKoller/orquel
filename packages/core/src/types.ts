@@ -1,5 +1,20 @@
 /**
  * A chunk of text with metadata for retrieval and indexing
+ * 
+ * @example
+ * ```typescript
+ * // Access chunk properties correctly:
+ * console.log(chunk.text);                           // The text content
+ * console.log(chunk.metadata.source.title);         // Source document title
+ * console.log(chunk.metadata.chunkIndex);           // Position in document
+ * 
+ * // Common mistake - DON'T do this:
+ * // console.log(chunk.source.title); // ❌ Wrong! source is inside metadata
+ * 
+ * // Use utility for safe access:
+ * import { OrquelUtils } from '@orquel/core';
+ * const title = OrquelUtils.getChunkTitle(chunk);    // ✅ Safe way
+ * ```
  */
 export interface Chunk {
   /** Unique identifier for the chunk */
@@ -8,7 +23,7 @@ export interface Chunk {
   text: string;
   /** Metadata about the chunk */
   metadata: {
-    /** Source document information */
+    /** Source document information - access via chunk.metadata.source */
     source: IngestSource;
     /** Index of this chunk within the source document */
     chunkIndex: number;
@@ -21,6 +36,21 @@ export interface Chunk {
 
 /**
  * Information about a source document being ingested
+ * 
+ * @example
+ * ```typescript
+ * const source: IngestSource = {
+ *   title: "Geography of Argentina",
+ *   kind: "md",
+ *   author: "Content Team",
+ *   createdAt: new Date()
+ * };
+ * 
+ * const { chunks } = await orq.ingest({
+ *   source,
+ *   content: "# Argentina\nArgentina is a country..."
+ * });
+ * ```
  */
 export interface IngestSource {
   /** Title or name of the document */
@@ -133,6 +163,16 @@ export interface AnswerAdapter {
 
 /**
  * Configuration for creating an Orquel instance
+ * 
+ * @example
+ * ```typescript
+ * const orq = createOrquel({
+ *   embeddings: openAIEmbeddings(),
+ *   vector: memoryStore(),
+ *   answerer: openAIAnswerer(),
+ *   debug: true  // Enable debugging features
+ * });
+ * ```
  */
 export interface OrquelConfig {
   /** Embeddings adapter for converting text to vectors */
@@ -147,6 +187,8 @@ export interface OrquelConfig {
   answerer?: AnswerAdapter;
   /** Optional custom chunking function */
   chunker?: (text: string) => Chunk[];
+  /** Enable debug mode with additional logging and validation (default: false) */
+  debug?: boolean;
 }
 
 /**
@@ -177,6 +219,16 @@ export interface QueryOptions {
 export interface AnswerOptions {
   /** Number of top chunks to use as context (default: 4) */
   topK?: number;
+}
+
+/**
+ * Result from a query operation containing a chunk and its relevance score
+ */
+export interface QueryResult {
+  /** The matching chunk */
+  chunk: Chunk;
+  /** Relevance score (higher is more relevant) */
+  score: number;
 }
 
 /**
