@@ -1,0 +1,35 @@
+{
+  "name": "orquel-example-postgresql-hybrid",
+  "version": "0.2.0",
+  "description": "Orquel PostgreSQL + Hybrid Search Example",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"Run: pnpm dev\" && exit 0"
+  },
+  "keywords": [
+    "orquel",
+    "rag",
+    "postgresql",
+    "pgvector",
+    "hybrid-search",
+    "typescript"
+  ],
+  "dependencies": {
+    "@orquel/core": "workspace:*",
+    "@orquel/embeddings-openai": "workspace:*",
+    "@orquel/store-pgvector": "workspace:*",
+    "@orquel/lexical-postgres": "workspace:*",
+    "@orquel/answer-openai": "workspace:*",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.6.3"
+  }
+}

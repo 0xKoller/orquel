@@ -1,0 +1,56 @@
+[
+  {
+    "query": "¿Cuándo se independizó Argentina y quiénes fueron sus principales próceres?",
+    "relevantChunkIds": ["historia-independencia-1", "historia-san-martin-1", "historia-belgrano-1"],
+    "expectedAnswer": "Argentina declaró su independencia el 9 de julio de 1816 durante el Congreso de Tucumán. Los principales próceres fueron José de San Martín (El Libertador, padre de la patria), Manuel Belgrano (creador de la bandera, abogado y militar) y Martín Miguel de Güemes (héroe gaucho de la independencia).",
+    "expectedKeywords": ["1816", "tucumán", "san martín", "belgrano", "güemes", "independencia", "próceres"],
+    "domain": "historia",
+    "difficulty": "easy",
+    "type": "factual"
+  },
+  {
+    "query": "¿Qué fue el peronismo y quién fue Eva Perón?",
+    "relevantChunkIds": ["historia-peronismo-1", "historia-eva-peron-1", "historia-juan-peron-1"],
+    "expectedAnswer": "El peronismo fue un movimiento político liderado por Juan Domingo Perón durante 1946-1955, caracterizado por nacionalizaciones, industrialización y justicia social. Eva Perón (Evita) fue la esposa de Perón, líder social que luchó por los derechos de la mujer y logró el voto femenino en 1947.",
+    "expectedKeywords": ["perón", "evita", "justicialismo", "nacionalizaciones", "voto femenino", "1947"],
+    "domain": "historia",
+    "difficulty": "medium",
+    "type": "conceptual"
+  },
+  {
+    "query": "Contame sobre la última dictadura militar argentina",
+    "relevantChunkIds": ["historia-dictadura-1976-1", "historia-terrorismo-estado-1", "historia-malvinas-1"],
+    "expectedAnswer": "La última dictadura militar argentina fue el Proceso de Reorganización Nacional (1976-1983), dirigida por Jorge Rafael Videla. Fue la más sangrienta, con terrorismo de Estado que causó la desaparición de aproximadamente 30,000 personas. Terminó tras la crisis económica y la derrota en la Guerra de las Malvinas (1982).",
+    "expectedKeywords": ["1976", "videla", "terrorismo", "desaparecidos", "30000", "malvinas", "1982"],
+    "domain": "historia",
+    "difficulty": "medium",
+    "type": "descriptive"
+  },
+  {
+    "query": "¿Cómo fue el proceso de inmigración europea en Argentina?",
+    "relevantChunkIds": ["historia-inmigracion-1", "historia-1880-1930-1", "historia-demografica-1"],
+    "expectedAnswer": "Entre 1880-1930 llegaron más de 6 millones de inmigrantes a Argentina, principalmente de España, Italia, Francia y Polonia. Esta inmigración masiva transformó demográfica y culturalmente el país, siendo parte del modelo 'gobernar es poblar' propuesto por Juan Bautista Alberdi.",
+    "expectedKeywords": ["1880", "1930", "6 millones", "españa", "italia", "alberdi", "gobernar es poblar"],
+    "domain": "historia",
+    "difficulty": "medium",
+    "type": "descriptive"
+  },
+  {
+    "query": "¿Quiénes fueron los pueblos originarios de Argentina?",
+    "relevantChunkIds": ["historia-precolombina-1", "historia-diaguitas-1", "historia-guaranies-1"],
+    "expectedAnswer": "Los pueblos originarios de Argentina incluían los Diaguitas (noroeste, con agricultura en terrazas), Guaraníes (noreste, con agricultura), Comechingones (sierras de Córdoba), Tehuelches (nómadas de la Patagonia), y otros como Charrúas, Onas y Yaganes. El noroeste también tuvo influencia incaica.",
+    "expectedKeywords": ["diaguitas", "guaraníes", "comechingones", "tehuelches", "incaica", "originarios"],
+    "domain": "historia",
+    "difficulty": "medium",
+    "type": "factual"
+  },
+  {
+    "query": "¿Cuándo fue la Revolución de Mayo y qué significó?",
+    "relevantChunkIds": ["historia-mayo-1810-1", "historia-primera-junta-1", "historia-revolucion-1"],
+    "expectedAnswer": "La Revolución de Mayo ocurrió el 25 de mayo de 1810 con la formación de la Primera Junta de Gobierno, destituyendo al virrey Baltasar Hidalgo de Cisneros. Significó el primer paso hacia la independencia argentina, con figuras clave como Cornelio Saavedra y Mariano Moreno.",
+    "expectedKeywords": ["25 mayo", "1810", "primera junta", "cisneros", "saavedra", "moreno", "independencia"],
+    "domain": "historia",
+    "difficulty": "easy",
+    "type": "factual"
+  }
+]

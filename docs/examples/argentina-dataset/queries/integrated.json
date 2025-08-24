@@ -1,0 +1,56 @@
+[
+  {
+    "query": "¿Cómo influyó la inmigración europea en Argentina?",
+    "relevantChunkIds": ["historia-inmigracion-1", "cultura-inmigracion-1", "gastronomia-italiana-1"],
+    "expectedAnswer": "La inmigración europea (1880-1930) transformó profundamente Argentina. Llegaron más de 6 millones de personas, principalmente de España, Italia, Francia y Polonia. Influyó en la gastronomía (pasta, pizza, fainá), arquitectura (estilo francés e italiano), cultura (barrios como La Boca), y creó la diversidad cultural actual del país.",
+    "expectedKeywords": ["1880", "1930", "6 millones", "españa", "italia", "gastronomía", "arquitectura", "diversidad"],
+    "domain": "integrated",
+    "difficulty": "hard",
+    "type": "analytical"
+  },
+  {
+    "query": "¿Qué características geográficas hacen única a Argentina?",
+    "relevantChunkIds": ["geografia-diversidad-1", "geografia-extension-1", "geografia-recursos-1"],
+    "expectedAnswer": "Argentina es única por su diversidad geográfica extraordinaria: es el octavo país más grande del mundo, se extiende desde los trópicos hasta la Antártida, tiene la montaña más alta de América (Aconcagua), vastas llanuras pampeanas, glaciares patagónicos, y abundantes recursos naturales como litio, petróleo y agua dulce.",
+    "expectedKeywords": ["octavo país", "trópicos", "antártida", "aconcagua", "pampeanas", "glaciares", "litio", "diversidad"],
+    "domain": "integrated",
+    "difficulty": "medium",
+    "type": "analytical"
+  },
+  {
+    "query": "Resumime los aspectos más distintivos de la cultura argentina",
+    "relevantChunkIds": ["cultura-tango-1", "cultura-futbol-1", "cultura-mate-1", "cultura-literatura-1"],
+    "expectedAnswer": "La cultura argentina se distingue por el tango (Patrimonio UNESCO), el fútbol como pasión nacional con figuras como Maradona y Messi, el mate como ritual social de amistad, la rica literatura con Borges y Cortázar, el asado como tradición gastronómica, y la fuerte influencia de la inmigración europea que creó una identidad cultural única.",
+    "expectedKeywords": ["tango", "patrimonio", "fútbol", "maradona", "messi", "mate", "borges", "cortázar", "asado", "inmigración"],
+    "domain": "integrated",
+    "difficulty": "hard",
+    "type": "analytical"
+  },
+  {
+    "query": "¿Cómo se relacionan la geografía y la gastronomía argentina?",
+    "relevantChunkIds": ["geografia-regiones-1", "gastronomia-regional-1", "geografia-clima-1"],
+    "expectedAnswer": "La geografía argentina determina su gastronomía regional: la región pampeana con clima ideal produce la mejor carne para asados; Cuyo con clima árido es perfecta para vinos; el noroeste aporta ingredientes andinos como quinoa y llama; el litoral contribuye con pescados de río; y la Patagonia ofrece cordero y mariscos de aguas frías.",
+    "expectedKeywords": ["pampeana", "carne", "cuyo", "vinos", "noroeste", "andinos", "litoral", "pescados", "patagonia", "cordero"],
+    "domain": "integrated",
+    "difficulty": "hard",
+    "type": "analytical"
+  },
+  {
+    "query": "¿Qué papel jugó Buenos Aires en la historia argentina?",
+    "relevantChunkIds": ["historia-buenos-aires-1", "ciudades-buenos-aires-historia-1", "historia-puerto-1"],
+    "expectedAnswer": "Buenos Aires fue fundamental en la historia argentina: refundada en 1580, se convirtió en el puerto principal durante la era agroexportadora, fue sede de la Revolución de Mayo (1810), capital del Virreinato del Río de la Plata, y desde 1880 es la capital federal. Concentra el poder político y económico del país.",
+    "expectedKeywords": ["1580", "puerto", "agroexportadora", "mayo 1810", "virreinato", "1880", "capital federal", "político"],
+    "domain": "integrated",
+    "difficulty": "medium",
+    "type": "analytical"
+  },
+  {
+    "query": "¿Cómo evolucionó la identidad cultural argentina a través de la historia?",
+    "relevantChunkIds": ["historia-cultura-evolucion-1", "cultura-identidad-1", "historia-inmigracion-cultura-1"],
+    "expectedAnswer": "La identidad cultural argentina evolucionó desde las bases indígenas precolombinas, pasó por la influencia española colonial, se forjó en las luchas de independencia con figuras como San Martín, se transformó masivamente con la inmigración europea (1880-1930) que trajo el tango y nuevas tradiciones, y se consolidó en el siglo XX con el peronismo y la cultura popular moderna.",
+    "expectedKeywords": ["indígenas", "colonial", "independencia", "san martín", "inmigración europea", "tango", "peronismo", "cultura popular"],
+    "domain": "integrated",
+    "difficulty": "hard",
+    "type": "analytical"
+  }
+]

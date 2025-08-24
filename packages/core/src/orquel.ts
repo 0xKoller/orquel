@@ -5,9 +5,11 @@ import type {
   QueryOptions,
   AnswerOptions,
   Chunk,
+  SearchResult,
 } from './types.js';
 import { defaultChunker } from './chunker.js';
 import { OrquelUtils } from './utils.js';
+import { mergeHybridResults, analyzeHybridOverlap } from './hybrid.js';
 
 /**
  * Create a new Orquel instance with the specified configuration
@@ -104,7 +106,7 @@ export function createOrquel(config: OrquelConfig): Orquel {
       
       // Prepare rows for vector store
       const rows = chunks.map((chunk, i) => ({
-        ...chunk,
+        chunk,
         embedding: embeddings[i]!,
       }));
 
@@ -132,7 +134,7 @@ export function createOrquel(config: OrquelConfig): Orquel {
 
       const { k = 10, hybrid = !!config.lexical, rerank = !!config.reranker } = opts;
       
-      let results: Array<{ chunk: Chunk; score: number }> = [];
+      let results: SearchResult[] = [];
 
       if (hybrid && config.lexical) {
         if (debug) {
@@ -147,8 +149,16 @@ export function createOrquel(config: OrquelConfig): Orquel {
           console.log(`📊 Dense results: ${denseResults.length}, Lexical results: ${lexicalResults.length}`);
         }
         
-        // Merge and normalize scores
-        results = mergeHybridResults(denseResults, lexicalResults, k);
+        // Analyze overlap if debug mode is enabled
+        if (debug) {
+          const overlap = analyzeHybridOverlap(denseResults, lexicalResults);
+          console.log(`🔄 Search overlap: ${overlap.overlapCount} shared, ${overlap.denseOnlyCount} dense-only, ${overlap.lexicalOnlyCount} lexical-only`);
+          console.log(`📊 Complementary score: ${(overlap.complementaryScore * 100).toFixed(1)}%`);
+        }
+        
+        // Merge results using configured hybrid options
+        const hybridOptions = config.hybrid || {};
+        results = mergeHybridResults(denseResults, lexicalResults, { ...hybridOptions, k });
       } else {
         if (debug) {
           console.log('🔄 Using dense-only search');
@@ -220,63 +230,3 @@ export function createOrquel(config: OrquelConfig): Orquel {
   };
 }
 
-function mergeHybridResults(
-  denseResults: Array<{ chunk: Chunk; score: number }>,
-  lexicalResults: Array<{ chunk: Chunk; score: number }>,
-  k: number,
-  denseWeight = 0.65,
-  lexicalWeight = 0.35
-): Array<{ chunk: Chunk; score: number }> {
-  // Normalize scores to [0, 1]
-  const normalizedDense = normalizeScores(denseResults);
-  const normalizedLexical = normalizeScores(lexicalResults);
-
-  // Create a map of chunk ID to combined score
-  const scoreMap = new Map<string, { chunk: Chunk; score: number }>();
-
-  // Add dense results
-  for (const result of normalizedDense) {
-    scoreMap.set(result.chunk.id, {
-      chunk: result.chunk,
-      score: result.score * denseWeight,
-    });
-  }
-
-  // Add/merge lexical results
-  for (const result of normalizedLexical) {
-    const existing = scoreMap.get(result.chunk.id);
-    if (existing) {
-      existing.score += result.score * lexicalWeight;
-    } else {
-      scoreMap.set(result.chunk.id, {
-        chunk: result.chunk,
-        score: result.score * lexicalWeight,
-      });
-    }
-  }
-
-  // Sort by combined score and take top k
-  return Array.from(scoreMap.values())
-    .sort((a, b) => b.score - a.score)
-    .slice(0, k);
-}
-
-function normalizeScores(
-  results: Array<{ chunk: Chunk; score: number }>
-): Array<{ chunk: Chunk; score: number }> {
-  if (results.length === 0) return results;
-
-  const scores = results.map(r => r.score);
-  const min = Math.min(...scores);
-  const max = Math.max(...scores);
-  const range = max - min;
-
-  if (range === 0) {
-    return results.map(r => ({ ...r, score: 1 }));
-  }
-
-  return results.map(r => ({
-    ...r,
-    score: (r.score - min) / range,
-  }));
-}

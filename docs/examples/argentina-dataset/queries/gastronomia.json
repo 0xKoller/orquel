@@ -1,0 +1,56 @@
+[
+  {
+    "query": "¿Qué es el asado argentino y por qué es tan importante?",
+    "relevantChunkIds": ["gastronomia-asado-1", "gastronomia-asado-ritual-1", "gastronomia-asado-social-1"],
+    "expectedAnswer": "El asado es mucho más que comida en Argentina; es un ritual social fundamental. Incluye cortes como bife de chorizo, vacío, entraña, morcilla y chorizo, cocinados lentamente a las brasas. El asador es una figura respetada y se usa para domingos familiares, celebraciones y encuentros con amigos.",
+    "expectedKeywords": ["asado", "ritual", "social", "bife de chorizo", "vacío", "entraña", "asador", "brasas"],
+    "domain": "gastronomia",
+    "difficulty": "medium",
+    "type": "conceptual"
+  },
+  {
+    "query": "¿Qué es el mate y cómo se toma?",
+    "relevantChunkIds": ["gastronomia-mate-1", "gastronomia-mate-preparacion-1", "gastronomia-mate-ritual-1"],
+    "expectedAnswer": "El mate es la bebida nacional por excelencia. Se prepara con yerba mate en calabaza y agua a 80°C. Se comparte en ronda siguiendo un código social estricto, puede ser dulce, amargo o con yuyos, y se toma todo el día, especialmente en la mañana y tarde.",
+    "expectedKeywords": ["mate", "yerba", "calabaza", "80 grados", "ronda", "código social", "dulce", "amargo"],
+    "domain": "gastronomia",
+    "difficulty": "medium",
+    "type": "procedural"
+  },
+  {
+    "query": "Describeme las empanadas argentinas y sus variaciones regionales",
+    "relevantChunkIds": ["gastronomia-empanadas-1", "gastronomia-empanadas-regionales-1", "gastronomia-repulgue-1"],
+    "expectedAnswer": "Las empanadas argentinas varían según la región: las Salteñas tienen relleno de carne cortada a cuchillo con papa y huevo duro; las Tucumanas son más pequeñas y jugosas; las Cordobesas llevan pasas de uva; y las Mendocinas incluyen aceitunas. El repulgue (forma de cerrar) indica el tipo de relleno.",
+    "expectedKeywords": ["empanadas", "salteñas", "tucumanas", "cordobesas", "mendocinas", "repulgue", "relleno", "regional"],
+    "domain": "gastronomia",
+    "difficulty": "medium",
+    "type": "descriptive"
+  },
+  {
+    "query": "¿Por qué Argentina es famosa por sus vinos?",
+    "relevantChunkIds": ["gastronomia-vinos-1", "gastronomia-malbec-1", "gastronomia-mendoza-vinos-1"],
+    "expectedAnswer": "Argentina es uno de los principales productores mundiales de vino. El Malbec es su cepa emblemática, con regiones importantes como Mendoza, San Juan, Salta y Río Negro. Los vinos se maridan tradicionalmente con carnes rojas, y el Torrontés es el varietal blanco característico argentino.",
+    "expectedKeywords": ["vinos", "malbec", "mendoza", "san juan", "salta", "torrontés", "maridaje", "carnes rojas"],
+    "domain": "gastronomia",
+    "difficulty": "easy",
+    "type": "factual"
+  },
+  {
+    "query": "¿Qué influencia tuvo la inmigración italiana en la gastronomía argentina?",
+    "relevantChunkIds": ["gastronomia-italiana-1", "gastronomia-pasta-1", "gastronomia-pizza-1"],
+    "expectedAnswer": "La inmigración italiana dejó una huella profunda en la gastronomía argentina. Introdujo tradiciones como los ñoquis del 29 (comerlos el 29 de cada mes), tallarines, ravioles y sorrentinos. La pizza argentina tiene características únicas con masa más gruesa, abundante muzzarella y se acompaña con fainá.",
+    "expectedKeywords": ["italiana", "ñoquis del 29", "tallarines", "ravioles", "pizza", "muzzarella", "fainá"],
+    "domain": "gastronomia",
+    "difficulty": "medium",
+    "type": "conceptual"
+  },
+  {
+    "query": "¿Qué es el dulce de leche y por qué es tan popular?",
+    "relevantChunkIds": ["gastronomia-dulce-leche-1", "gastronomia-alfajores-1", "gastronomia-dulce-usos-1"],
+    "expectedAnswer": "El dulce de leche es la obsesión nacional argentina. Aunque su origen es disputado, Argentina lo popularizó mundialmente. Se usa solo, en alfajores, tortas y helados, con variedades como familiar, repostero y para untar. Los alfajores, especialmente los Havanna de Mar del Plata, son íconos nacionales.",
+    "expectedKeywords": ["dulce de leche", "obsesión", "alfajores", "havanna", "mar del plata", "tortas", "helados"],
+    "domain": "gastronomia",
+    "difficulty": "easy",
+    "type": "factual"
+  }
+]

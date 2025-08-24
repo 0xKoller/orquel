@@ -1,0 +1,56 @@
+[
+  {
+    "query": "¿Qué es el tango y dónde nació?",
+    "relevantChunkIds": ["cultura-tango-1", "cultura-tango-origen-1", "cultura-tango-unesco-1"],
+    "expectedAnswer": "El tango es la expresión cultural más reconocida de Argentina mundialmente. Nació a finales del siglo XIX en los barrios populares de Buenos Aires, caracterizado por música melancólica y apasionada y danza sensual. Fue declarado Patrimonio Cultural Inmaterial de la Humanidad por la UNESCO en 2009.",
+    "expectedKeywords": ["tango", "buenos aires", "siglo XIX", "melancólica", "unesco", "2009", "patrimonio"],
+    "domain": "cultura",
+    "difficulty": "easy",
+    "type": "factual"
+  },
+  {
+    "query": "¿Quién fue Jorge Luis Borges?",
+    "relevantChunkIds": ["cultura-borges-1", "cultura-literatura-1", "cultura-ficciones-1"],
+    "expectedAnswer": "Jorge Luis Borges (1899-1986) fue considerado uno de los escritores más influyentes del siglo XX. Sus obras importantes incluyen 'Ficciones', 'El Aleph' y 'Laberintos'. Fue maestro del cuento fantástico y la literatura metafísica.",
+    "expectedKeywords": ["borges", "1899", "1986", "ficciones", "aleph", "laberintos", "fantástico", "metafísica"],
+    "domain": "cultura",
+    "difficulty": "easy",
+    "type": "factual"
+  },
+  {
+    "query": "Explicame la importancia del fútbol en la cultura argentina",
+    "relevantChunkIds": ["cultura-futbol-1", "cultura-maradona-1", "cultura-messi-1"],
+    "expectedAnswer": "El fútbol es más que un deporte en Argentina; es una pasión nacional. Incluye clubes tradicionales como River Plate y Boca Juniors, con el Superclásico como uno de los clásicos más importantes del mundo. Figuras legendarias incluyen Diego Maradona y Lionel Messi, campeón mundial 2022.",
+    "expectedKeywords": ["pasión", "river", "boca", "superclásico", "maradona", "messi", "mundial 2022"],
+    "domain": "cultura",
+    "difficulty": "medium",
+    "type": "conceptual"
+  },
+  {
+    "query": "¿Qué es el mate y por qué es importante?",
+    "relevantChunkIds": ["cultura-mate-1", "cultura-mate-ritual-1", "cultura-mate-social-1"],
+    "expectedAnswer": "El mate es la infusión nacional argentina, más que una bebida es un símbolo de amistad y hospitalidad. Es un ritual social importante en la vida cotidiana que se comparte en ronda, pasando de mano en mano, representando lazos comunitarios.",
+    "expectedKeywords": ["mate", "infusión", "amistad", "hospitalidad", "ritual", "social", "ronda", "comunitarios"],
+    "domain": "cultura",
+    "difficulty": "easy",
+    "type": "conceptual"
+  },
+  {
+    "query": "¿Quién fue Julio Cortázar y cuáles fueron sus obras?",
+    "relevantChunkIds": ["cultura-cortazar-1", "cultura-rayuela-1", "cultura-literatura-argentina-1"],
+    "expectedAnswer": "Julio Cortázar (1914-1984) revolucionó la narrativa latinoamericana y fue exponente del realismo mágico. Sus obras destacadas incluyen 'Rayuela', 'Bestiario' y 'Las armas secretas'.",
+    "expectedKeywords": ["cortázar", "1914", "1984", "rayuela", "bestiario", "realismo mágico", "narrativa"],
+    "domain": "cultura",
+    "difficulty": "medium",
+    "type": "factual"
+  },
+  {
+    "query": "¿Qué géneros musicales son típicos de Argentina?",
+    "relevantChunkIds": ["cultura-folklore-1", "cultura-tango-musica-1", "cultura-rock-nacional-1"],
+    "expectedAnswer": "Argentina tiene varios géneros musicales típicos: el tango (mundialmente famoso), folklore (chacarera, zamba, cueca, malambo, chamamé), y rock nacional con figuras como Charly García, Luis Alberto Spinetta y bandas como Soda Stereo.",
+    "expectedKeywords": ["tango", "folklore", "chacarera", "zamba", "rock nacional", "charly garcía", "spinetta", "soda stereo"],
+    "domain": "cultura",
+    "difficulty": "medium",
+    "type": "factual"
+  }
+]

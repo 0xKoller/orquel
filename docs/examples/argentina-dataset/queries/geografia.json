@@ -1,0 +1,56 @@
+[
+  {
+    "query": "¿Cuáles son las principales regiones geográficas de Argentina?",
+    "relevantChunkIds": ["geografia-regiones-1", "geografia-pampeana-1", "geografia-patagonia-1"],
+    "expectedAnswer": "Las principales regiones geográficas son la Región Pampeana, la Patagonia, la Región Andina, el Noroeste Argentino (NOA), el Noreste Argentino (NEA) y la Región de Cuyo.",
+    "expectedKeywords": ["pampeana", "patagonia", "andes", "noroeste", "noreste", "cuyo", "regiones"],
+    "domain": "geografia",
+    "difficulty": "easy",
+    "type": "factual"
+  },
+  {
+    "query": "¿Cuál es la montaña más alta de Argentina y cuánto mide?",
+    "relevantChunkIds": ["geografia-andes-1", "geografia-aconcagua-1"],
+    "expectedAnswer": "El Aconcagua es la montaña más alta de Argentina y de América, con 6,960 metros de altura, ubicado en la Cordillera de los Andes.",
+    "expectedKeywords": ["aconcagua", "6960", "metros", "andes", "américa", "montaña"],
+    "domain": "geografia",
+    "difficulty": "easy",
+    "type": "factual"
+  },
+  {
+    "query": "Describeme la Patagonia argentina",
+    "relevantChunkIds": ["geografia-patagonia-1", "geografia-patagonia-2", "geografia-clima-1"],
+    "expectedAnswer": "La Patagonia es una región árida que se extiende por el sur del país, comprende aproximadamente el 28% del territorio nacional. Tiene clima frío y seco, es rica en recursos naturales como petróleo y gas, y presenta paisajes únicos con glaciares, lagos y montañas. Incluye las provincias de Neuquén, Río Negro, Chubut, Santa Cruz y Tierra del Fuego.",
+    "expectedKeywords": ["patagonia", "árida", "petróleo", "gas", "glaciares", "lagos", "provincias"],
+    "domain": "geografia",
+    "difficulty": "medium",
+    "type": "descriptive"
+  },
+  {
+    "query": "¿Qué recursos naturales tiene Argentina?",
+    "relevantChunkIds": ["geografia-recursos-1", "geografia-minerales-1", "geografia-energia-1"],
+    "expectedAnswer": "Argentina posee abundantes recursos naturales incluyendo recursos minerales como litio (segunda reserva mundial), oro, plata, cobre y uranio. También tiene importantes recursos energéticos como petróleo y gas natural, especialmente en Vaca Muerta, y recursos hídricos como glaciares andinos y el Acuífero Guaraní.",
+    "expectedKeywords": ["litio", "petróleo", "gas", "vaca muerta", "glaciares", "guaraní", "minerales"],
+    "domain": "geografia",
+    "difficulty": "medium",
+    "type": "factual"
+  },
+  {
+    "query": "¿Cuáles son los principales ríos de Argentina?",
+    "relevantChunkIds": ["geografia-rios-1", "geografia-parana-1", "geografia-uruguay-1"],
+    "expectedAnswer": "Los principales ríos de Argentina incluyen el Río Paraná (uno de los más importantes de América del Sur, navegable y vital para el comercio), el Río Uruguay (forma frontera con Uruguay y Brasil), y el Río de la Plata (uno de los estuarios más grandes del mundo, formado por la confluencia del Paraná y Uruguay).",
+    "expectedKeywords": ["paraná", "uruguay", "río de la plata", "navegable", "comercio", "estuario"],
+    "domain": "geografia",
+    "difficulty": "easy",
+    "type": "factual"
+  },
+  {
+    "query": "¿Qué tipo de clima predomina en la región pampeana?",
+    "relevantChunkIds": ["geografia-clima-templado-1", "geografia-pampeana-clima-1"],
+    "expectedAnswer": "En la región pampeana predomina el clima templado con temperaturas moderadas y lluvias regulares, ideal para la agricultura.",
+    "expectedKeywords": ["templado", "moderadas", "lluvias", "regulares", "agricultura"],
+    "domain": "geografia",
+    "difficulty": "easy",
+    "type": "factual"
+  }
+]

@@ -1,37 +1,24 @@
 /**
  * A chunk of text with metadata for retrieval and indexing
- * 
- * @example
- * ```typescript
- * // Access chunk properties correctly:
- * console.log(chunk.text);                           // The text content
- * console.log(chunk.metadata.source.title);         // Source document title
- * console.log(chunk.metadata.chunkIndex);           // Position in document
- * 
- * // Common mistake - DON'T do this:
- * // console.log(chunk.source.title); // ❌ Wrong! source is inside metadata
- * 
- * // Use utility for safe access:
- * import { OrquelUtils } from '@orquel/core';
- * const title = OrquelUtils.getChunkTitle(chunk);    // ✅ Safe way
- * ```
  */
 export interface Chunk {
   /** Unique identifier for the chunk */
   id: string;
   /** The text content of the chunk */
   text: string;
-  /** Metadata about the chunk */
-  metadata: {
-    /** Source document information - access via chunk.metadata.source */
-    source: IngestSource;
-    /** Index of this chunk within the source document */
-    chunkIndex: number;
-    /** Number of tokens (optional) */
-    tokens?: number;
-    /** Content hash for deduplication */
-    hash: string;
+  /** Index of this chunk within the source document */
+  index: number;
+  /** Content hash for deduplication */
+  hash: string;
+  /** Source document information */
+  source: {
+    /** Title or name of the document */
+    title: string;
+    /** Document type/format */
+    kind?: string;
   };
+  /** Additional metadata */
+  metadata: Record<string, any>;
 }
 
 /**
@@ -84,6 +71,23 @@ export interface EmbeddingsAdapter {
 }
 
 /**
+ * A chunk with its embedding vector
+ */
+export interface ChunkWithEmbedding {
+  chunk: Chunk;
+  embedding: number[];
+}
+
+/**
+ * Search result with chunk and relevance information
+ */
+export interface SearchResult {
+  chunk: Chunk;
+  score: number;
+  rank: number;
+}
+
+/**
  * Adapter for storing and searching vector embeddings
  */
 export interface VectorStoreAdapter {
@@ -93,17 +97,33 @@ export interface VectorStoreAdapter {
    * Insert or update chunks with their embeddings
    * @param rows - Array of chunks with their embedding vectors
    */
-  upsert(rows: Array<Chunk & { embedding: number[] }>): Promise<void>;
+  upsert(rows: ChunkWithEmbedding[]): Promise<void>;
   /**
    * Search for similar vectors
    * @param query - Query embedding vector
    * @param k - Number of results to return
-   * @returns Promise resolving to array of chunks with similarity scores
+   * @returns Promise resolving to search results
    */
-  searchByVector(
-    query: number[],
-    k: number
-  ): Promise<Array<{ chunk: Chunk; score: number }>>;
+  searchByVector(query: number[], k: number): Promise<SearchResult[]>;
+  /**
+   * Search for chunks by their IDs
+   * @param ids - Array of chunk IDs to retrieve
+   * @returns Promise resolving to search results
+   */
+  searchByIds(ids: string[]): Promise<SearchResult[]>;
+  /**
+   * Delete chunks by their IDs
+   * @param ids - Array of chunk IDs to delete
+   */
+  delete(ids: string[]): Promise<void>;
+  /**
+   * Clear all chunks from the store
+   */
+  clear(): Promise<void>;
+  /**
+   * Close the adapter and clean up resources
+   */
+  close(): Promise<void>;
 }
 
 /**
@@ -121,12 +141,13 @@ export interface LexicalAdapter {
    * Search using keywords and text matching
    * @param text - Search query text
    * @param k - Number of results to return
-   * @returns Promise resolving to array of chunks with relevance scores
+   * @returns Promise resolving to search results
    */
-  search(
-    text: string,
-    k: number
-  ): Promise<Array<{ chunk: Chunk; score: number }>>;
+  search(text: string, k: number): Promise<SearchResult[]>;
+  /**
+   * Close the adapter and clean up resources
+   */
+  close(): Promise<void>;
 }
 
 /**
@@ -162,6 +183,18 @@ export interface AnswerAdapter {
 }
 
 /**
+ * Configuration options for hybrid search
+ */
+export interface HybridSearchOptions {
+  /** Weight for dense (vector) search results (default: 0.7) */
+  denseWeight?: number;
+  /** Weight for lexical search results (default: 0.3) */
+  lexicalWeight?: number;
+  /** Score normalization method (default: 'rrf') */
+  normalizationMethod?: 'rrf' | 'minmax' | 'zscore';
+}
+
+/**
  * Configuration for creating an Orquel instance
  * 
  * @example
@@ -185,6 +218,8 @@ export interface OrquelConfig {
   reranker?: RerankerAdapter;
   /** Optional answer adapter for generating responses */
   answerer?: AnswerAdapter;
+  /** Optional hybrid search configuration */
+  hybrid?: HybridSearchOptions;
   /** Optional custom chunking function */
   chunker?: (text: string) => Chunk[];
   /** Enable debug mode with additional logging and validation (default: false) */

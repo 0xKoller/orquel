@@ -161,21 +161,23 @@ function createChunk(text: string, source: IngestSource, chunkIndex: number): Ch
   return {
     id: `${source.title}-${chunkIndex}-${hash}`,
     text,
-    metadata: {
-      source,
-      chunkIndex,
-      hash,
+    index: chunkIndex,
+    hash,
+    source: {
+      title: source.title,
+      ...(source.kind && { kind: source.kind }),
     },
+    metadata: {},
   };
 }
 
 function deduplicateChunks(chunks: Chunk[]): Chunk[] {
   const seen = new Set<string>();
   return chunks.filter(chunk => {
-    if (seen.has(chunk.metadata.hash)) {
+    if (seen.has(chunk.hash)) {
       return false;
     }
-    seen.add(chunk.metadata.hash);
+    seen.add(chunk.hash);
     return true;
   });
 }

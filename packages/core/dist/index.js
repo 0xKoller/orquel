@@ -94,20 +94,22 @@ function createChunk(text, source, chunkIndex) {
   return {
     id: `${source.title}-${chunkIndex}-${hash}`,
     text,
-    metadata: {
-      source,
-      chunkIndex,
-      hash
-    }
+    index: chunkIndex,
+    hash,
+    source: {
+      title: source.title,
+      ...source.kind && { kind: source.kind }
+    },
+    metadata: {}
   };
 }
 function deduplicateChunks(chunks) {
   const seen = /* @__PURE__ */ new Set();
   return chunks.filter((chunk) => {
-    if (seen.has(chunk.metadata.hash)) {
+    if (seen.has(chunk.hash)) {
       return false;
     }
-    seen.add(chunk.metadata.hash);
+    seen.add(chunk.hash);
     return true;
   });
 }
@@ -294,6 +296,155 @@ var OrquelUtils = class {
   }
 };
 
+// src/hybrid.ts
+function reciprocalRankFusion(denseResults, lexicalResults, k = 10, rffConstant = 60) {
+  const denseRanks = /* @__PURE__ */ new Map();
+  const lexicalRanks = /* @__PURE__ */ new Map();
+  denseResults.forEach((result, index) => {
+    denseRanks.set(result.chunk.id, index + 1);
+  });
+  lexicalResults.forEach((result, index) => {
+    lexicalRanks.set(result.chunk.id, index + 1);
+  });
+  const allChunkIds = /* @__PURE__ */ new Set([
+    ...denseResults.map((r) => r.chunk.id),
+    ...lexicalResults.map((r) => r.chunk.id)
+  ]);
+  const rrfResults = [];
+  for (const chunkId of allChunkIds) {
+    let rrfScore = 0;
+    let chunk = null;
+    const denseRank = denseRanks.get(chunkId);
+    if (denseRank !== void 0) {
+      rrfScore += 1 / (rffConstant + denseRank);
+      chunk = denseResults.find((r) => r.chunk.id === chunkId)?.chunk || null;
+    }
+    const lexicalRank = lexicalRanks.get(chunkId);
+    if (lexicalRank !== void 0) {
+      rrfScore += 1 / (rffConstant + lexicalRank);
+      if (!chunk) {
+        chunk = lexicalResults.find((r) => r.chunk.id === chunkId)?.chunk || null;
+      }
+    }
+    if (chunk) {
+      rrfResults.push({ id: chunkId, score: rrfScore, chunk, rank: 0 });
+    }
+  }
+  rrfResults.sort((a, b) => b.score - a.score);
+  return rrfResults.slice(0, k).map((result, index) => ({
+    chunk: result.chunk,
+    score: result.score,
+    rank: index + 1
+  }));
+}
+function weightedScoreCombination(denseResults, lexicalResults, k = 10, denseWeight = 0.7, lexicalWeight = 0.3) {
+  const normalizedDense = normalizeScores(denseResults);
+  const normalizedLexical = normalizeScores(lexicalResults);
+  const scoreMap = /* @__PURE__ */ new Map();
+  for (const result of normalizedDense) {
+    scoreMap.set(result.chunk.id, {
+      ...result,
+      score: result.score * denseWeight
+    });
+  }
+  for (const result of normalizedLexical) {
+    const existing = scoreMap.get(result.chunk.id);
+    if (existing) {
+      existing.score += result.score * lexicalWeight;
+    } else {
+      scoreMap.set(result.chunk.id, {
+        ...result,
+        score: result.score * lexicalWeight
+      });
+    }
+  }
+  const sortedResults = Array.from(scoreMap.values()).sort((a, b) => b.score - a.score).slice(0, k);
+  return sortedResults.map((result, index) => ({
+    ...result,
+    rank: index + 1
+  }));
+}
+function normalizeScoresMinMax(results) {
+  if (results.length === 0) return results;
+  const scores = results.map((r) => r.score);
+  const min = Math.min(...scores);
+  const max = Math.max(...scores);
+  if (max === min) {
+    return results.map((result) => ({ ...result, score: 1 }));
+  }
+  return results.map((result) => ({
+    ...result,
+    score: (result.score - min) / (max - min)
+  }));
+}
+function normalizeScoresZScore(results) {
+  if (results.length === 0) return results;
+  if (results.length === 1) return results.map((r) => ({ ...r, score: 1 }));
+  const scores = results.map((r) => r.score);
+  const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+  const variance = scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
+  const stdDev = Math.sqrt(variance);
+  if (stdDev === 0) {
+    return results.map((result) => ({ ...result, score: 1 }));
+  }
+  return results.map((result) => {
+    const zScore = (result.score - mean) / stdDev;
+    const normalizedScore = 1 / (1 + Math.exp(-zScore));
+    return { ...result, score: normalizedScore };
+  });
+}
+function normalizeScores(results, method = "minmax") {
+  switch (method) {
+    case "minmax":
+      return normalizeScoresMinMax(results);
+    case "zscore":
+      return normalizeScoresZScore(results);
+    default:
+      return normalizeScoresMinMax(results);
+  }
+}
+function mergeHybridResults(denseResults, lexicalResults, options) {
+  const {
+    k = 10,
+    denseWeight = 0.7,
+    lexicalWeight = 0.3,
+    normalizationMethod = "rrf"
+  } = options;
+  switch (normalizationMethod) {
+    case "rrf":
+      return reciprocalRankFusion(denseResults, lexicalResults, k);
+    case "minmax":
+    case "zscore":
+      return weightedScoreCombination(
+        denseResults,
+        lexicalResults,
+        k,
+        denseWeight,
+        lexicalWeight
+      );
+    default:
+      return reciprocalRankFusion(denseResults, lexicalResults, k);
+  }
+}
+function analyzeHybridOverlap(denseResults, lexicalResults) {
+  const denseIds = new Set(denseResults.map((r) => r.chunk.id));
+  const lexicalIds = new Set(lexicalResults.map((r) => r.chunk.id));
+  const overlapIds = new Set([...denseIds].filter((id) => lexicalIds.has(id)));
+  const denseOnlyCount = denseIds.size - overlapIds.size;
+  const lexicalOnlyCount = lexicalIds.size - overlapIds.size;
+  const overlapCount = overlapIds.size;
+  const totalUnique = denseIds.size + lexicalIds.size - overlapIds.size;
+  const overlapPercentage = totalUnique > 0 ? overlapCount / totalUnique * 100 : 0;
+  const complementaryScore = totalUnique > 0 ? (denseOnlyCount + lexicalOnlyCount) / totalUnique : 0;
+  return {
+    denseOnlyCount,
+    lexicalOnlyCount,
+    overlapCount,
+    overlapPercentage,
+    complementaryScore
+  };
+}
+
 // src/orquel.ts
 function createOrquel(config) {
   const chunker = config.chunker || ((text) => defaultChunker(text, { title: "Unknown" }));
@@ -351,7 +502,7 @@ function createOrquel(config) {
         console.log(`\u{1F9E0} Generated ${embeddings.length} embeddings (${config.embeddings.dim}D)`);
       }
       const rows = chunks.map((chunk, i) => ({
-        ...chunk,
+        chunk,
         embedding: embeddings[i]
       }));
       await config.vector.upsert(rows);
@@ -382,7 +533,13 @@ function createOrquel(config) {
         if (debug) {
           console.log(`\u{1F4CA} Dense results: ${denseResults.length}, Lexical results: ${lexicalResults.length}`);
         }
-        results = mergeHybridResults(denseResults, lexicalResults, k);
+        if (debug) {
+          const overlap = analyzeHybridOverlap(denseResults, lexicalResults);
+          console.log(`\u{1F504} Search overlap: ${overlap.overlapCount} shared, ${overlap.denseOnlyCount} dense-only, ${overlap.lexicalOnlyCount} lexical-only`);
+          console.log(`\u{1F4CA} Complementary score: ${(overlap.complementaryScore * 100).toFixed(1)}%`);
+        }
+        const hybridOptions = config.hybrid || {};
+        results = mergeHybridResults(denseResults, lexicalResults, { ...hybridOptions, k });
       } else {
         if (debug) {
           console.log("\u{1F504} Using dense-only search");
@@ -437,43 +594,6 @@ function createOrquel(config) {
       return { answer, contexts };
     }
   };
-}
-function mergeHybridResults(denseResults, lexicalResults, k, denseWeight = 0.65, lexicalWeight = 0.35) {
-  const normalizedDense = normalizeScores(denseResults);
-  const normalizedLexical = normalizeScores(lexicalResults);
-  const scoreMap = /* @__PURE__ */ new Map();
-  for (const result of normalizedDense) {
-    scoreMap.set(result.chunk.id, {
-      chunk: result.chunk,
-      score: result.score * denseWeight
-    });
-  }
-  for (const result of normalizedLexical) {
-    const existing = scoreMap.get(result.chunk.id);
-    if (existing) {
-      existing.score += result.score * lexicalWeight;
-    } else {
-      scoreMap.set(result.chunk.id, {
-        chunk: result.chunk,
-        score: result.score * lexicalWeight
-      });
-    }
-  }
-  return Array.from(scoreMap.values()).sort((a, b) => b.score - a.score).slice(0, k);
-}
-function normalizeScores(results) {
-  if (results.length === 0) return results;
-  const scores = results.map((r) => r.score);
-  const min = Math.min(...scores);
-  const max = Math.max(...scores);
-  const range = max - min;
-  if (range === 0) {
-    return results.map((r) => ({ ...r, score: 1 }));
-  }
-  return results.map((r) => ({
-    ...r,
-    score: (r.score - min) / range
-  }));
 }
 
 // src/evaluation.ts
@@ -804,8 +924,13 @@ function createSampleEvaluationDataset() {
 export {
   OrquelUtils,
   RAGEvaluator,
+  analyzeHybridOverlap,
   createOrquel,
   createSampleEvaluationDataset,
-  defaultChunker
+  defaultChunker,
+  mergeHybridResults,
+  normalizeScores,
+  reciprocalRankFusion,
+  weightedScoreCombination
 };
 //# sourceMappingURL=index.js.map

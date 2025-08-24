@@ -10,21 +10,14 @@ CLI Target: es2022
 CLI Cleaning output folder
 ESM Build start
 CJS Build start
-ESM dist/index.js     27.43 KB
-ESM dist/index.js.map 51.56 KB
-ESM ⚡️ Build success in 10ms
-CJS dist/index.cjs     28.64 KB
-CJS dist/index.cjs.map 51.79 KB
-CJS ⚡️ Build success in 10ms
+ESM dist/index.js     27.63 KB
+ESM dist/index.js.map 51.97 KB
+ESM ⚡️ Build success in 12ms
+CJS dist/index.cjs     28.84 KB
+CJS dist/index.cjs.map 52.20 KB
+CJS ⚡️ Build success in 12ms
 DTS Build start
-src/evaluation.ts(158,27): error TS2379: Argument of type '{ responseTime: number; answer: string | undefined; answerScore: number | undefined; query: string; retrievedChunkIds: string[]; relevantChunkIds: string[]; precision: number; recall: number; ... 4 more ...; hasRelevantResult: boolean; }' is not assignable to parameter of type 'QueryEvaluationResult' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'answer' are incompatible.
-    Type 'string | undefined' is not assignable to type 'string'.
-      Type 'undefined' is not assignable to type 'string'.
-src/evaluation.ts(216,27): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
-src/evaluation.ts(254,41): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
+src/chunker.ts(161,3): error TS2739: Type '{ id: string; text: string; metadata: { source: IngestSource; chunkIndex: number; hash: string; }; }' is missing the following properties from type 'Chunk': index, hash, source
 
 Error: error occurred in dts build
     at Worker.<anonymous> (/Users/0xkoller/orquel/node_modules/.pnpm/tsup@8.5.0_postcss@8.5.6_tsx@4.20.4_typescript@5.9.2/node_modules/tsup/dist/index.js:1545:26)

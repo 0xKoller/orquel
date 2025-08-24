@@ -1,0 +1,56 @@
+[
+  {
+    "query": "¿Cuáles son las ciudades más importantes de Argentina?",
+    "relevantChunkIds": ["ciudades-principales-1", "ciudades-buenos-aires-1", "ciudades-cordoba-1"],
+    "expectedAnswer": "Las ciudades más importantes de Argentina incluyen Buenos Aires (capital con más de 3 millones de habitantes), Córdoba (segunda ciudad más poblada con 1.5 millones), Rosario (tercera ciudad con 1.3 millones), Mendoza (capital del vino), y La Plata (capital de Buenos Aires provincia).",
+    "expectedKeywords": ["buenos aires", "córdoba", "rosario", "mendoza", "la plata", "habitantes", "capital"],
+    "domain": "ciudades",
+    "difficulty": "easy",
+    "type": "factual"
+  },
+  {
+    "query": "Contame sobre Buenos Aires, la capital argentina",
+    "relevantChunkIds": ["ciudades-buenos-aires-1", "ciudades-caba-1", "ciudades-barrios-1"],
+    "expectedAnswer": "Buenos Aires es la capital federal de Argentina, una metrópoli cosmopolita de más de 3 millones de habitantes. Fundada en 1580 por Juan de Garay, tiene barrios emblemáticos como San Telmo (histórico, tango), La Boca (Caminito, colores), Palermo (vida nocturna), Recoleta (elegancia) y Puerto Madero (moderno).",
+    "expectedKeywords": ["capital", "cosmopolita", "3 millones", "1580", "san telmo", "la boca", "palermo", "recoleta"],
+    "domain": "ciudades",
+    "difficulty": "medium",
+    "type": "descriptive"
+  },
+  {
+    "query": "¿Por qué Mendoza es famosa mundialmente?",
+    "relevantChunkIds": ["ciudades-mendoza-1", "ciudades-mendoza-vino-1", "ciudades-mendoza-turismo-1"],
+    "expectedAnswer": "Mendoza es famosa mundialmente como la Capital del Vino. Es una ciudad oasis al pie de la Cordillera de los Andes con clima árido ideal para la viticultura. Su principal actividad económica es la vitivinicultura, tiene circuitos turísticos de bodegas, y está cerca del Aconcagua, la montaña más alta de América.",
+    "expectedKeywords": ["capital del vino", "oasis", "andes", "viticultura", "bodegas", "aconcagua", "turismo"],
+    "domain": "ciudades",
+    "difficulty": "medium",
+    "type": "factual"
+  },
+  {
+    "query": "¿Qué características tiene la ciudad de Córdoba?",
+    "relevantChunkIds": ["ciudades-cordoba-1", "ciudades-cordoba-universidad-1", "ciudades-cordoba-industria-1"],
+    "expectedAnswer": "Córdoba es la segunda ciudad más poblada de Argentina con 1.5 millones de habitantes. Tiene la Universidad Nacional de Córdoba (más antigua del país, 1613), es un centro industrial automotriz y tecnológico, y posee arquitectura colonial con la Manzana Jesuítica como Patrimonio UNESCO.",
+    "expectedKeywords": ["segunda ciudad", "1.5 millones", "universidad", "1613", "industrial", "automotriz", "jesuítica", "unesco"],
+    "domain": "ciudades",
+    "difficulty": "medium",
+    "type": "factual"
+  },
+  {
+    "query": "¿Qué hace especial a Bariloche?",
+    "relevantChunkIds": ["ciudades-bariloche-1", "ciudades-bariloche-turismo-1", "ciudades-bariloche-esqui-1"],
+    "expectedAnswer": "Bariloche (San Carlos de Bariloche) es conocida como la 'Suiza Argentina' y es el principal destino turístico de la Patagonia. Está ubicada junto al lago Nahuel Huapi, tiene el centro de esquí Cerro Catedral, arquitectura estilo alpino, y es famosa por su chocolate artesanal.",
+    "expectedKeywords": ["suiza argentina", "patagonia", "nahuel huapi", "cerro catedral", "esquí", "alpino", "chocolate"],
+    "domain": "ciudades",
+    "difficulty": "medium",
+    "type": "descriptive"
+  },
+  {
+    "query": "¿Qué tiene de particular Ushuaia?",
+    "relevantChunkIds": ["ciudades-ushuaia-1", "ciudades-fin-mundo-1", "ciudades-ushuaia-turismo-1"],
+    "expectedAnswer": "Ushuaia es conocida como la ciudad del 'Fin del Mundo' por ser la ciudad más austral del planeta. Está ubicada en el Canal Beagle, es punto de partida hacia la Antártida, tiene el Parque Nacional Tierra del Fuego con naturaleza prístina, y su economía se basa en turismo y zona franca industrial.",
+    "expectedKeywords": ["fin del mundo", "austral", "canal beagle", "antártida", "tierra del fuego", "turismo", "zona franca"],
+    "domain": "ciudades",
+    "difficulty": "medium",
+    "type": "descriptive"
+  }
+]

@@ -1,0 +1,138 @@
+{
+  "dataset": {
+    "name": "Argentina Comprehensive RAG Benchmark Dataset",
+    "version": "1.0.0",
+    "language": "es",
+    "created": "2024-01-15",
+    "description": "Comprehensive Spanish-language dataset about Argentina covering geography, history, culture, gastronomy, and major cities. Designed for RAG system evaluation and benchmarking.",
+    "license": "MIT",
+    "total_words": 15000,
+    "total_documents": 5,
+    "estimated_chunks": 200,
+    "domains": ["geografia", "historia", "cultura", "gastronomia", "ciudades"],
+    "difficulty_levels": ["easy", "medium", "hard"],
+    "query_types": ["factual", "descriptive", "conceptual", "procedural", "analytical"]
+  },
+  "documents": [
+    {
+      "filename": "geografia.md",
+      "title": "Geografía de Argentina",
+      "domain": "geografia",
+      "words": 3200,
+      "sections": 12,
+      "topics": ["regiones", "clima", "recursos", "hidrografía", "biodiversidad"],
+      "key_entities": ["Patagonia", "Pampeana", "Andes", "Aconcagua", "Paraná", "litio"]
+    },
+    {
+      "filename": "historia.md",
+      "title": "Historia de Argentina",
+      "domain": "historia",
+      "words": 3500,
+      "sections": 15,
+      "topics": ["precolombina", "colonia", "independencia", "inmigración", "peronismo", "democracia"],
+      "key_entities": ["San Martín", "Belgrano", "Perón", "Evita", "Revolución Mayo", "dictadura"]
+    },
+    {
+      "filename": "cultura.md",
+      "title": "Cultura Argentina",
+      "domain": "cultura",
+      "words": 2800,
+      "sections": 11,
+      "topics": ["tango", "literatura", "fútbol", "música", "tradiciones", "arte"],
+      "key_entities": ["Borges", "Cortázar", "Maradona", "Messi", "tango", "mate", "asado"]
+    },
+    {
+      "filename": "gastronomia.md",
+      "title": "Gastronomía Argentina",
+      "domain": "gastronomia",
+      "words": 3000,
+      "sections": 13,
+      "topics": ["asado", "empanadas", "pasta", "dulces", "bebidas", "regional"],
+      "key_entities": ["asado", "empanadas", "mate", "vinos", "Malbec", "dulce de leche", "alfajores"]
+    },
+    {
+      "filename": "ciudades.md",
+      "title": "Ciudades de Argentina",
+      "domain": "ciudades",
+      "words": 2500,
+      "sections": 14,
+      "topics": ["Buenos Aires", "capitales provinciales", "turismo", "economía", "historia urbana"],
+      "key_entities": ["Buenos Aires", "Córdoba", "Rosario", "Mendoza", "Bariloche", "Ushuaia"]
+    }
+  ],
+  "ground_truth": {
+    "total_queries": 36,
+    "by_domain": {
+      "geografia": 6,
+      "historia": 6,
+      "cultura": 6,
+      "gastronomia": 6,
+      "ciudades": 6,
+      "integrated": 6
+    },
+    "by_difficulty": {
+      "easy": 12,
+      "medium": 18,
+      "hard": 6
+    },
+    "by_type": {
+      "factual": 16,
+      "descriptive": 8,
+      "conceptual": 6,
+      "procedural": 2,
+      "analytical": 4
+    }
+  },
+  "evaluation_metrics": {
+    "expected_performance": {
+      "precision": {"min": 0.75, "target": 0.85, "max": 0.90},
+      "recall": {"min": 0.70, "target": 0.80, "max": 0.85},
+      "f1_score": {"min": 0.72, "target": 0.82, "max": 0.87},
+      "hit_rate": {"min": 0.90, "target": 0.93, "max": 0.95},
+      "response_time_ms": {"min": 2000, "target": 3500, "max": 5000}
+    },
+    "tested_with": {
+      "embeddings": "OpenAI text-embedding-3-small",
+      "answerer": "OpenAI gpt-4o-mini",
+      "vector_store": "Memory store",
+      "chunk_size": 600,
+      "chunk_overlap": 100
+    }
+  },
+  "usage_guidelines": {
+    "chunking": {
+      "recommended_size": "500-800 characters",
+      "strategy": "recursive splitting by headers then sentences",
+      "overlap": "50-100 characters",
+      "preserve_structure": true
+    },
+    "embeddings": {
+      "language_support": "requires multilingual or Spanish-optimized embeddings",
+      "dimension_recommendations": "384+ dimensions for optimal performance"
+    },
+    "evaluation": {
+      "minimum_k": 5,
+      "recommended_k": 10,
+      "answer_evaluation": true,
+      "citation_checking": true
+    }
+  },
+  "quality_assurance": {
+    "content_review": "Professional review for accuracy and completeness",
+    "fact_checking": "Cross-verified with multiple authoritative sources",
+    "ground_truth_validation": "Queries tested with multiple RAG systems",
+    "linguistic_review": "Native Spanish speaker validation"
+  },
+  "extensions": {
+    "potential_additions": [
+      "Economic data and statistics",
+      "Scientific and technological achievements", 
+      "Environmental and climate change information",
+      "International relations and diplomacy",
+      "Sports beyond football",
+      "Contemporary politics and governance"
+    ],
+    "multilingual_potential": "Content could be translated for multilingual RAG testing",
+    "temporal_updates": "Historical content is stable; contemporary sections may need updates"
+  }
+}
