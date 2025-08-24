@@ -28,7 +28,6 @@
   "workspaces": [
     "packages/*",
     "packages/adapters/*",
-    "packages/integrations/*",
-    "examples/*"
+    "packages/integrations/*"
   ]
 }
