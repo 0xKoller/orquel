@@ -200,7 +200,7 @@ export async function benchmarkVectorStore(
       const warmupChunks = generateTestChunks(Math.min(100, chunkCount), config.dimensions);
       for (let i = 0; i < config.warmupRuns; i++) {
         await adapter.upsert(warmupChunks.slice(0, 10));
-        await adapter.searchByVector(queries[0].embedding, config.k);
+        await adapter.searchByVector(queries[0]?.embedding || [], config.k);
       }
       await adapter.clear();
     }
@@ -422,7 +422,10 @@ export function compareResults(results: BenchmarkResult[]): ComparisonResult {
     for (const result2 of results) {
       if (result1.adapterName !== result2.adapterName) {
         const ratio1 = result1.summary.avgUpsertThroughput / result2.summary.avgUpsertThroughput;
-        ratios[result1.adapterName][result2.adapterName] = ratio1;
+        const ratiosForAdapter = ratios[result1.adapterName];
+        if (ratiosForAdapter) {
+          ratiosForAdapter[result2.adapterName] = ratio1;
+        }
       }
     }
   }
@@ -430,9 +433,9 @@ export function compareResults(results: BenchmarkResult[]): ComparisonResult {
   // Generate recommendations
   const recommendations = {
     development: results.find(r => r.adapterName.includes('memory'))?.adapterName || 
-                results[0].adapterName + ' (fast iteration)',
-    production: bestPerformers.upsert || results[0].adapterName,
-    largescale: bestPerformers.search || results[0].adapterName,
+                results[0]?.adapterName + ' (fast iteration)',
+    production: bestPerformers.upsert || results[0]?.adapterName || 'unknown',
+    largescale: bestPerformers.search || results[0]?.adapterName || 'unknown',
   };
   
   return {

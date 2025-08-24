@@ -637,4 +637,112 @@ declare function analyzeHybridOverlap(denseResults: SearchResult[], lexicalResul
     complementaryScore: number;
 };
 
-export { type AnswerAdapter, type AnswerOptions, type Chunk, type ChunkWithEmbedding, type ChunkerOptions, type EmbeddingsAdapter, type EvaluationConfig, type EvaluationMetrics, type GroundTruthQuery, type HybridSearchOptions, type IngestArgs, type IngestSource, type LexicalAdapter, type Orquel, type OrquelConfig, OrquelUtils, type QueryEvaluationResult, type QueryOptions, type QueryResult, RAGEvaluator, type RerankerAdapter, type SearchResult, type VectorStoreAdapter, analyzeHybridOverlap, createOrquel, createSampleEvaluationDataset, defaultChunker, mergeHybridResults, normalizeScores, reciprocalRankFusion, weightedScoreCombination };
+/**
+ * Performance benchmarking utilities for Orquel
+ *
+ * This module provides comprehensive performance testing tools to:
+ * - Measure adapter performance across different scales
+ * - Compare memory store vs PostgreSQL performance
+ * - Benchmark hybrid search algorithms
+ * - Generate performance reports and recommendations
+ */
+
+interface BenchmarkConfig {
+    /** Number of chunks to test with */
+    chunkCounts: number[];
+    /** Vector dimensions for testing */
+    dimensions: number;
+    /** Number of search queries to run */
+    searchQueries: number;
+    /** k value for search results */
+    k: number;
+    /** Number of runs to average */
+    runs: number;
+    /** Warm-up runs before measurement */
+    warmupRuns?: number;
+}
+interface PerformanceMetrics {
+    /** Operation name */
+    operation: string;
+    /** Number of items processed */
+    itemCount: number;
+    /** Time in milliseconds */
+    duration: number;
+    /** Items per second */
+    throughput: number;
+    /** Memory usage in MB (if available) */
+    memoryMB?: number;
+    /** Additional metadata */
+    metadata?: Record<string, any>;
+}
+interface BenchmarkResult {
+    /** Adapter name being tested */
+    adapterName: string;
+    /** Test configuration used */
+    config: BenchmarkConfig;
+    /** Performance metrics for each operation */
+    metrics: PerformanceMetrics[];
+    /** Overall summary statistics */
+    summary: {
+        avgUpsertThroughput: number;
+        avgSearchLatency: number;
+        peakMemoryMB?: number;
+        recommendation: string;
+    };
+    /** Timestamp when benchmark was run */
+    timestamp: Date;
+}
+interface ComparisonResult {
+    /** Results being compared */
+    results: BenchmarkResult[];
+    /** Performance comparison analysis */
+    analysis: {
+        /** Which adapter performed best for each operation */
+        bestPerformers: Record<string, string>;
+        /** Performance ratios (how many times faster/slower) */
+        ratios: Record<string, Record<string, number>>;
+        /** Recommendations based on use case */
+        recommendations: {
+            development: string;
+            production: string;
+            largescale: string;
+        };
+    };
+}
+/**
+ * Generate realistic test chunks for benchmarking
+ */
+declare function generateTestChunks(count: number, dimensions: number): ChunkWithEmbedding[];
+/**
+ * Generate realistic search queries for benchmarking
+ */
+declare function generateSearchQueries(count: number): {
+    text: string;
+    embedding: number[];
+}[];
+/**
+ * Run performance benchmark on a vector store adapter
+ */
+declare function benchmarkVectorStore(adapter: VectorStoreAdapter, config: BenchmarkConfig): Promise<BenchmarkResult>;
+/**
+ * Benchmark lexical search adapter
+ */
+declare function benchmarkLexicalStore(adapter: LexicalAdapter, config: BenchmarkConfig): Promise<BenchmarkResult>;
+/**
+ * Compare performance between multiple adapters
+ */
+declare function compareResults(results: BenchmarkResult[]): ComparisonResult;
+/**
+ * Generate a formatted benchmark report
+ */
+declare function generateReport(comparison: ComparisonResult): string;
+/**
+ * Default benchmark configuration for quick testing
+ */
+declare const DEFAULT_BENCHMARK_CONFIG: BenchmarkConfig;
+/**
+ * Comprehensive benchmark configuration for thorough testing
+ */
+declare const COMPREHENSIVE_BENCHMARK_CONFIG: BenchmarkConfig;
+
+export { type AnswerAdapter, type AnswerOptions, type BenchmarkConfig, type BenchmarkResult, COMPREHENSIVE_BENCHMARK_CONFIG, type Chunk, type ChunkWithEmbedding, type ChunkerOptions, type ComparisonResult, DEFAULT_BENCHMARK_CONFIG, type EmbeddingsAdapter, type EvaluationConfig, type EvaluationMetrics, type GroundTruthQuery, type HybridSearchOptions, type IngestArgs, type IngestSource, type LexicalAdapter, type Orquel, type OrquelConfig, OrquelUtils, type PerformanceMetrics, type QueryEvaluationResult, type QueryOptions, type QueryResult, RAGEvaluator, type RerankerAdapter, type SearchResult, type VectorStoreAdapter, analyzeHybridOverlap, benchmarkLexicalStore, benchmarkVectorStore, compareResults, createOrquel, createSampleEvaluationDataset, defaultChunker, generateReport, generateSearchQueries, generateTestChunks, mergeHybridResults, normalizeScores, reciprocalRankFusion, weightedScoreCombination };

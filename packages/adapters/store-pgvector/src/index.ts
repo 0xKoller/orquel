@@ -11,18 +11,32 @@ export interface PgVectorStoreOptions {
   tableName?: string;
   /** Vector dimensions (must match embedding model) */
   dimensions: number;
-  /** Vector index type (default: ivfflat) */
+  /** Vector index type (default: hnsw) */
   indexType?: 'ivfflat' | 'hnsw';
-  /** Number of lists for IVFFlat index (default: 100) */
-  lists?: number;
-  /** ef_construction parameter for HNSW index (default: 200) */
-  efConstruction?: number;
-  /** Maximum number of connections in pool (default: 20) */
-  maxConnections?: number;
-  /** Minimum number of connections in pool (default: 5) */
-  minConnections?: number;
-  /** Connection idle timeout in ms (default: 30000) */
-  idleTimeoutMs?: number;
+  /** Custom pool configuration */
+  poolConfig?: PoolConfig;
+  /** Index optimization settings */
+  indexOptions?: {
+    /** Number of lists for IVFFlat index (default: 100) */
+    lists?: number;
+    /** ef_construction parameter for HNSW index (default: 64) */
+    efConstruction?: number;
+    /** m parameter for HNSW index (default: 16) */
+    m?: number;
+    /** ef_search parameter for runtime search (default: 100) */
+    efSearch?: number;
+  };
+  /** Performance optimization settings */
+  performanceOptions?: {
+    /** Batch size for bulk operations (default: 100) */
+    batchSize?: number;
+    /** Enable prepared statements (default: true) */
+    usePreparedStatements?: boolean;
+    /** Connection timeout in ms (default: 5000) */
+    connectionTimeoutMs?: number;
+    /** Statement timeout in ms (default: 60000) */
+    statementTimeoutMs?: number;
+  };
   /** Auto-create table and indexes if they don't exist (default: true) */
   autoSetup?: boolean;
 }
@@ -48,24 +62,39 @@ export function pgvectorStore(options: PgVectorStoreOptions): PgVectorStoreAdapt
     connectionString,
     tableName = 'orquel_chunks',
     dimensions,
-    indexType = 'ivfflat',
-    lists = 100,
-    efConstruction = 200,
-    maxConnections = 20,
-    minConnections = 5,
-    idleTimeoutMs = 30000,
+    indexType = 'hnsw',
+    poolConfig,
+    indexOptions = {},
+    performanceOptions = {},
     autoSetup = true,
   } = options;
+  
+  const {
+    lists = 100,
+    efConstruction = 64,
+    m = 16,
+    efSearch = 100,
+  } = indexOptions;
+  
+  const {
+    batchSize = 100,
+    usePreparedStatements = true,
+    connectionTimeoutMs = 5000,
+    statementTimeoutMs = 60000,
+  } = performanceOptions;
 
   // Create connection pool
-  const poolConfig: PoolConfig = {
+  const defaultPoolConfig: PoolConfig = {
     connectionString,
-    max: maxConnections,
-    min: minConnections,
-    idleTimeoutMillis: idleTimeoutMs,
+    max: 20,
+    min: 5,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: connectionTimeoutMs,
+    statement_timeout: statementTimeoutMs,
+    ...poolConfig, // Allow custom overrides
   };
 
-  const pool = new Pool(poolConfig);
+  const pool = new Pool(defaultPoolConfig);
   let isInitialized = false;
 
   /**

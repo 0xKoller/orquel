@@ -921,13 +921,354 @@ function createSampleEvaluationDataset() {
     }
   ];
 }
+
+// src/benchmark.ts
+function generateTestChunks(count, dimensions) {
+  const chunks = [];
+  const sampleTexts = [
+    "Machine learning algorithms process vast amounts of data to identify patterns and make predictions.",
+    "Database systems provide structured storage and efficient retrieval of information using SQL queries.",
+    "Web development frameworks simplify the creation of dynamic user interfaces and server-side applications.",
+    "Cloud computing platforms enable scalable deployment of applications with global availability and reliability.",
+    "Artificial intelligence research focuses on creating systems that can perform tasks requiring human-like intelligence.",
+    "Software architecture patterns help organize code for maintainability, scalability, and testability.",
+    "Data analysis techniques extract meaningful insights from raw information to support decision making.",
+    "Network protocols ensure reliable communication between distributed systems across the internet.",
+    "Security measures protect digital assets from unauthorized access and malicious attacks.",
+    "User experience design prioritizes intuitive interfaces that enhance user satisfaction and engagement."
+  ];
+  for (let i = 0; i < count; i++) {
+    const textIndex = i % sampleTexts.length;
+    const baseText = sampleTexts[textIndex];
+    chunks.push({
+      chunk: {
+        id: `benchmark-chunk-${i}`,
+        text: `${baseText} This is chunk number ${i} with unique content for testing purposes.`,
+        index: i,
+        hash: `hash-${i}`,
+        source: {
+          title: `Benchmark Document ${Math.floor(i / 10)}`,
+          kind: "md"
+        },
+        metadata: {
+          benchmarkId: i,
+          category: ["ai", "database", "web", "cloud", "security"][i % 5]
+        }
+      },
+      embedding: generateRandomEmbedding(dimensions)
+    });
+  }
+  return chunks;
+}
+function generateRandomEmbedding(dimensions) {
+  return Array.from({ length: dimensions }, () => Math.random() * 2 - 1);
+}
+function generateSearchQueries(count) {
+  const queryTexts = [
+    "machine learning algorithms",
+    "database query optimization",
+    "web application security",
+    "cloud computing scalability",
+    "artificial intelligence research",
+    "software architecture patterns",
+    "data analysis techniques",
+    "network communication protocols",
+    "user interface design",
+    "system performance monitoring"
+  ];
+  const queries = [];
+  for (let i = 0; i < count; i++) {
+    const text = queryTexts[i % queryTexts.length] + ` query ${i}`;
+    queries.push({
+      text,
+      embedding: generateRandomEmbedding(1536)
+      // Default to OpenAI dimensions
+    });
+  }
+  return queries;
+}
+function measureMemory() {
+  if (typeof process !== "undefined" && process.memoryUsage) {
+    const usage = process.memoryUsage();
+    return usage.heapUsed / 1024 / 1024;
+  }
+  return 0;
+}
+async function benchmarkVectorStore(adapter, config) {
+  const metrics = [];
+  const startMemory = measureMemory();
+  console.log(`\u{1F52C} Benchmarking ${adapter.name}...`);
+  for (const chunkCount of config.chunkCounts) {
+    console.log(`  \u{1F4CA} Testing with ${chunkCount} chunks...`);
+    const testChunks = generateTestChunks(chunkCount, config.dimensions);
+    const queries = generateSearchQueries(config.searchQueries);
+    if (config.warmupRuns && config.warmupRuns > 0) {
+      const warmupChunks = generateTestChunks(Math.min(100, chunkCount), config.dimensions);
+      for (let i = 0; i < config.warmupRuns; i++) {
+        await adapter.upsert(warmupChunks.slice(0, 10));
+        await adapter.searchByVector(queries[0]?.embedding || [], config.k);
+      }
+      await adapter.clear();
+    }
+    const upsertTimes = [];
+    for (let run = 0; run < config.runs; run++) {
+      await adapter.clear();
+      const start = performance.now();
+      await adapter.upsert(testChunks);
+      const end = performance.now();
+      upsertTimes.push(end - start);
+    }
+    const avgUpsertTime = upsertTimes.reduce((sum, time) => sum + time, 0) / upsertTimes.length;
+    metrics.push({
+      operation: "upsert",
+      itemCount: chunkCount,
+      duration: avgUpsertTime,
+      throughput: chunkCount / (avgUpsertTime / 1e3),
+      memoryMB: measureMemory(),
+      metadata: {
+        minTime: Math.min(...upsertTimes),
+        maxTime: Math.max(...upsertTimes),
+        stdDev: Math.sqrt(upsertTimes.reduce((sum, time) => sum + Math.pow(time - avgUpsertTime, 2), 0) / upsertTimes.length)
+      }
+    });
+    const searchTimes = [];
+    for (let run = 0; run < config.runs; run++) {
+      for (const query of queries) {
+        const start = performance.now();
+        const results = await adapter.searchByVector(query.embedding, config.k);
+        const end = performance.now();
+        searchTimes.push(end - start);
+        if (results.length === 0 && chunkCount > 0) {
+          console.warn(`  \u26A0\uFE0F No results returned for search with ${chunkCount} chunks`);
+        }
+      }
+    }
+    const avgSearchTime = searchTimes.reduce((sum, time) => sum + time, 0) / searchTimes.length;
+    metrics.push({
+      operation: "search",
+      itemCount: chunkCount,
+      duration: avgSearchTime,
+      throughput: 1e3 / avgSearchTime,
+      // Searches per second
+      memoryMB: measureMemory(),
+      metadata: {
+        queriesPerRun: queries.length,
+        minTime: Math.min(...searchTimes),
+        maxTime: Math.max(...searchTimes),
+        p95Time: searchTimes.sort((a, b) => a - b)[Math.floor(searchTimes.length * 0.95)]
+      }
+    });
+  }
+  const peakMemory = Math.max(...metrics.map((m) => m.memoryMB || 0));
+  const avgUpsertThroughput = metrics.filter((m) => m.operation === "upsert").reduce((sum, m) => sum + m.throughput, 0) / metrics.filter((m) => m.operation === "upsert").length;
+  const avgSearchLatency = metrics.filter((m) => m.operation === "search").reduce((sum, m) => sum + m.duration, 0) / metrics.filter((m) => m.operation === "search").length;
+  let recommendation = "";
+  if (avgUpsertThroughput > 1e3) {
+    recommendation = "Excellent performance for production use";
+  } else if (avgUpsertThroughput > 100) {
+    recommendation = "Good performance for most applications";
+  } else {
+    recommendation = "Suitable for development and small-scale use";
+  }
+  if (avgSearchLatency > 100) {
+    recommendation += ". Consider optimizing for search latency.";
+  }
+  return {
+    adapterName: adapter.name,
+    config,
+    metrics,
+    summary: {
+      avgUpsertThroughput,
+      avgSearchLatency,
+      peakMemoryMB: peakMemory,
+      recommendation
+    },
+    timestamp: /* @__PURE__ */ new Date()
+  };
+}
+async function benchmarkLexicalStore(adapter, config) {
+  const metrics = [];
+  console.log(`\u{1F52C} Benchmarking lexical adapter ${adapter.name}...`);
+  for (const chunkCount of config.chunkCounts) {
+    console.log(`  \u{1F4CA} Testing with ${chunkCount} chunks...`);
+    const testChunks = generateTestChunks(chunkCount, config.dimensions).map((c) => c.chunk);
+    const queries = generateSearchQueries(config.searchQueries);
+    const indexTimes = [];
+    for (let run = 0; run < config.runs; run++) {
+      const start = performance.now();
+      await adapter.index(testChunks);
+      const end = performance.now();
+      indexTimes.push(end - start);
+    }
+    const avgIndexTime = indexTimes.reduce((sum, time) => sum + time, 0) / indexTimes.length;
+    metrics.push({
+      operation: "index",
+      itemCount: chunkCount,
+      duration: avgIndexTime,
+      throughput: chunkCount / (avgIndexTime / 1e3),
+      memoryMB: measureMemory()
+    });
+    const searchTimes = [];
+    for (let run = 0; run < config.runs; run++) {
+      for (const query of queries) {
+        const start = performance.now();
+        const results = await adapter.search(query.text, config.k);
+        const end = performance.now();
+        searchTimes.push(end - start);
+      }
+    }
+    const avgSearchTime = searchTimes.reduce((sum, time) => sum + time, 0) / searchTimes.length;
+    metrics.push({
+      operation: "search",
+      itemCount: chunkCount,
+      duration: avgSearchTime,
+      throughput: 1e3 / avgSearchTime,
+      memoryMB: measureMemory()
+    });
+  }
+  const avgIndexThroughput = metrics.filter((m) => m.operation === "index").reduce((sum, m) => sum + m.throughput, 0) / metrics.filter((m) => m.operation === "index").length;
+  const avgSearchLatency = metrics.filter((m) => m.operation === "search").reduce((sum, m) => sum + m.duration, 0) / metrics.filter((m) => m.operation === "search").length;
+  return {
+    adapterName: adapter.name,
+    config,
+    metrics,
+    summary: {
+      avgUpsertThroughput: avgIndexThroughput,
+      avgSearchLatency,
+      recommendation: avgSearchLatency < 50 ? "Excellent lexical search performance" : "Good lexical search performance"
+    },
+    timestamp: /* @__PURE__ */ new Date()
+  };
+}
+function compareResults(results) {
+  const bestPerformers = {};
+  const ratios = {};
+  const operations = ["upsert", "search", "index"];
+  for (const operation of operations) {
+    let bestThroughput = 0;
+    let bestAdapter = "";
+    for (const result of results) {
+      const opMetrics = result.metrics.filter((m) => m.operation === operation);
+      if (opMetrics.length > 0) {
+        const avgThroughput = opMetrics.reduce((sum, m) => sum + m.throughput, 0) / opMetrics.length;
+        if (avgThroughput > bestThroughput) {
+          bestThroughput = avgThroughput;
+          bestAdapter = result.adapterName;
+        }
+      }
+    }
+    if (bestAdapter) {
+      bestPerformers[operation] = bestAdapter;
+    }
+  }
+  for (const result1 of results) {
+    ratios[result1.adapterName] = {};
+    for (const result2 of results) {
+      if (result1.adapterName !== result2.adapterName) {
+        const ratio1 = result1.summary.avgUpsertThroughput / result2.summary.avgUpsertThroughput;
+        const ratiosForAdapter = ratios[result1.adapterName];
+        if (ratiosForAdapter) {
+          ratiosForAdapter[result2.adapterName] = ratio1;
+        }
+      }
+    }
+  }
+  const recommendations = {
+    development: results.find((r) => r.adapterName.includes("memory"))?.adapterName || results[0]?.adapterName + " (fast iteration)",
+    production: bestPerformers.upsert || results[0]?.adapterName || "unknown",
+    largescale: bestPerformers.search || results[0]?.adapterName || "unknown"
+  };
+  return {
+    results,
+    analysis: {
+      bestPerformers,
+      ratios,
+      recommendations
+    }
+  };
+}
+function generateReport(comparison) {
+  const { results, analysis } = comparison;
+  let report = "# Orquel Performance Benchmark Report\n\n";
+  report += `Generated: ${(/* @__PURE__ */ new Date()).toISOString()}
+
+`;
+  report += "## Summary\n\n";
+  report += "| Adapter | Avg Upsert Throughput | Avg Search Latency | Peak Memory | Recommendation |\n";
+  report += "|---------|----------------------|-------------------|-------------|----------------|\n";
+  for (const result of results) {
+    const throughput = result.summary.avgUpsertThroughput.toFixed(1);
+    const latency = result.summary.avgSearchLatency.toFixed(2);
+    const memory = result.summary.peakMemoryMB?.toFixed(1) || "N/A";
+    const rec = result.summary.recommendation;
+    report += `| ${result.adapterName} | ${throughput} items/s | ${latency}ms | ${memory}MB | ${rec} |
+`;
+  }
+  report += "\n## Best Performers\n\n";
+  for (const [operation, adapter] of Object.entries(analysis.bestPerformers)) {
+    report += `- **${operation}**: ${adapter}
+`;
+  }
+  report += "\n## Recommendations\n\n";
+  report += `- **Development**: ${analysis.recommendations.development}
+`;
+  report += `- **Production**: ${analysis.recommendations.production}
+`;
+  report += `- **Large Scale**: ${analysis.recommendations.largescale}
+`;
+  report += "\n## Detailed Metrics\n\n";
+  for (const result of results) {
+    report += `### ${result.adapterName}
+
+`;
+    for (const metric of result.metrics) {
+      report += `**${metric.operation}** (${metric.itemCount} items):
+`;
+      report += `- Duration: ${metric.duration.toFixed(2)}ms
+`;
+      report += `- Throughput: ${metric.throughput.toFixed(2)} ops/s
+`;
+      if (metric.memoryMB) {
+        report += `- Memory: ${metric.memoryMB.toFixed(1)}MB
+`;
+      }
+      report += "\n";
+    }
+  }
+  return report;
+}
+var DEFAULT_BENCHMARK_CONFIG = {
+  chunkCounts: [10, 50, 100, 500],
+  dimensions: 1536,
+  // OpenAI text-embedding-3-small
+  searchQueries: 5,
+  k: 10,
+  runs: 3,
+  warmupRuns: 1
+};
+var COMPREHENSIVE_BENCHMARK_CONFIG = {
+  chunkCounts: [100, 500, 1e3, 5e3, 1e4],
+  dimensions: 1536,
+  searchQueries: 20,
+  k: 10,
+  runs: 5,
+  warmupRuns: 3
+};
 export {
+  COMPREHENSIVE_BENCHMARK_CONFIG,
+  DEFAULT_BENCHMARK_CONFIG,
   OrquelUtils,
   RAGEvaluator,
   analyzeHybridOverlap,
+  benchmarkLexicalStore,
+  benchmarkVectorStore,
+  compareResults,
   createOrquel,
   createSampleEvaluationDataset,
   defaultChunker,
+  generateReport,
+  generateSearchQueries,
+  generateTestChunks,
   mergeHybridResults,
   normalizeScores,
   reciprocalRankFusion,

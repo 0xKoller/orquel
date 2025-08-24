@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@orquel/core": "workspace:*",
+    "@orquel/mcp-server": "workspace:*",
     "commander": "^12.1.0",
     "inquirer": "^12.0.0"
   }

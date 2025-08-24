@@ -70,13 +70,28 @@ CJS Build start
 
 
 
-CJS dist/index.cjs     2.35 KB
-CJS dist/index.cjs.map 3.05 KB
-CJS ⚡️ Build success in 118ms
 ESM dist/index.js     1.36 KB
 ESM dist/index.js.map 3.00 KB
-ESM ⚡️ Build success in 125ms
+ESM ⚡️ Build success in 25ms
+CJS dist/index.cjs     2.35 KB
+CJS dist/index.cjs.map 3.05 KB
+CJS ⚡️ Build success in 25ms
 DTS Build start
-DTS ⚡️ Build success in 613ms
-DTS dist/index.d.ts  129.00 B
-DTS dist/index.d.cts 129.00 B
+src/index.ts(13,11): error TS2322: Type '(rows: (Chunk & { embedding: number[]; })[]) => Promise<void>' is not assignable to type '(rows: ChunkWithEmbedding[]) => Promise<void>'.
+  Types of parameters 'rows' and 'rows' are incompatible.
+    Type 'ChunkWithEmbedding[]' is not assignable to type '(Chunk & { embedding: number[]; })[]'.
+      Type 'ChunkWithEmbedding' is not assignable to type 'Chunk & { embedding: number[]; }'.
+        Type 'ChunkWithEmbedding' is missing the following properties from type 'Chunk': id, text, index, hash, and 2 more.
+src/index.ts(29,11): error TS2322: Type '(query: number[], k: number) => Promise<{ chunk: { id: string; text: string; metadata: Record<string, any>; }; score: number; }[]>' is not assignable to type '(query: number[], k: number) => Promise<SearchResult[]>'.
+  Type 'Promise<{ chunk: { id: string; text: string; metadata: Record<string, any>; }; score: number; }[]>' is not assignable to type 'Promise<SearchResult[]>'.
+    Type '{ chunk: { id: string; text: string; metadata: Record<string, any>; }; score: number; }[]' is not assignable to type 'SearchResult[]'.
+      Property 'rank' is missing in type '{ chunk: { id: string; text: string; metadata: Record<string, any>; }; score: number; }' but required in type 'SearchResult'.
+
+Error: error occurred in dts build
+    at Worker.<anonymous> (/Users/0xkoller/orquel/node_modules/.pnpm/tsup@8.5.0_postcss@8.5.6_tsx@4.20.4_typescript@5.9.2/node_modules/tsup/dist/index.js:1545:26)
+    at Worker.emit (node:events:507:28)
+    at MessagePort.<anonymous> (node:internal/worker:268:53)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:827:20)
+    at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28)
+DTS Build error
+ ELIFECYCLE  Command failed with exit code 1.

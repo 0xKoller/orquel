@@ -10,20 +10,13 @@ CLI Target: es2022
 CLI Cleaning output folder
 ESM Build start
 CJS Build start
-ESM dist/index.js     27.63 KB
-ESM dist/index.js.map 51.97 KB
-ESM ⚡️ Build success in 12ms
-CJS dist/index.cjs     28.84 KB
-CJS dist/index.cjs.map 52.20 KB
-CJS ⚡️ Build success in 12ms
+ESM dist/index.js     44.56 KB
+ESM dist/index.js.map 86.13 KB
+ESM ⚡️ Build success in 15ms
+CJS dist/index.cjs     46.43 KB
+CJS dist/index.cjs.map 86.48 KB
+CJS ⚡️ Build success in 16ms
 DTS Build start
-src/chunker.ts(161,3): error TS2739: Type '{ id: string; text: string; metadata: { source: IngestSource; chunkIndex: number; hash: string; }; }' is missing the following properties from type 'Chunk': index, hash, source
-
-Error: error occurred in dts build
-    at Worker.<anonymous> (/Users/0xkoller/orquel/node_modules/.pnpm/tsup@8.5.0_postcss@8.5.6_tsx@4.20.4_typescript@5.9.2/node_modules/tsup/dist/index.js:1545:26)
-    at Worker.emit (node:events:507:28)
-    at MessagePort.<anonymous> (node:internal/worker:268:53)
-    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:827:20)
-    at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28)
-DTS Build error
- ELIFECYCLE  Command failed with exit code 1.
+DTS ⚡️ Build success in 678ms
+DTS dist/index.d.ts  23.17 KB
+DTS dist/index.d.cts 23.17 KB
